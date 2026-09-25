@@ -28,6 +28,7 @@
   --sh:2px 2px 0 var(--ink);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
 html,body{height:100%;overflow:hidden}
 body{background:var(--bg);color:var(--ink);font:16px/1.45 var(--fb);font-weight:600;-webkit-font-smoothing:antialiased;overscroll-behavior:none}
 button,input{font:inherit;color:inherit}
@@ -95,7 +96,8 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-o
 .skrow .tr{height:14px;border-radius:7px;background:var(--soft);border:2px solid var(--ink);overflow:hidden}.skrow .fl{height:100%;display:block}.skrow .v{font-weight:800;text-align:right;font-variant-numeric:tabular-nums}
 .dl{font-size:12px;font-weight:800}.dl.up{color:#3A7F5D}.dl.dn{color:#B4564A}
 .skd{border-bottom:2px dashed rgba(35,49,61,.2);padding-block:8px}.skd:last-child{border-bottom:0}
-.skd summary{display:grid;grid-template-columns:1fr auto 34px;align-items:center;gap:8px;cursor:pointer;list-style:none;font-weight:800;font-size:15px;min-height:36px}
+.pips{display:inline-flex;gap:2px}.pip{display:block;width:7px;height:12px;border-radius:2px;border:1.5px solid rgba(35,49,61,.35);background:var(--paper)}.pip.on{border-color:var(--ink)}.pip.cur{outline:2px solid var(--ink);outline-offset:1px}.pips.big .pip{width:12px;height:18px;border-radius:3px}
+.skd summary{display:grid;grid-template-columns:minmax(0,1fr) auto 44px 30px;align-items:center;gap:8px;cursor:pointer;list-style:none;font-weight:800;font-size:15px;min-height:36px}
 .skd summary::-webkit-details-marker{display:none}.skd summary:after{content:'';}
 .skd[open] summary{margin-bottom:8px}.skbody{display:flex;flex-direction:column;gap:8px}
 .skbody .tr{border-radius:7px;background:var(--soft);border:2px solid var(--ink);overflow:hidden}.skbody .fl{display:block;height:100%}
@@ -181,6 +183,33 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-o
 textarea.fbt{width:100%;min-height:80px;border:2.5px solid var(--ink);border-radius:14px;padding:10px 12px;font:600 16px/1.4 var(--fb);background:var(--paper);resize:vertical}
 .tip{display:flex;gap:12px;align-items:flex-start}
 .tip b{font:800 17px/1.2 var(--fd)}
+.gest{width:100%;display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--soft);border:2px dashed rgba(35,49,61,.3);border-radius:14px;padding:6px 8px 8px}
+.gest svg{width:170px;height:auto}.gest span{font-size:13px;font-weight:800}
+.gest .fg{transform-box:fill-box;transform-origin:center}
+@keyframes gTap{0%,60%,100%{transform:scale(1)}30%{transform:scale(.8)}}
+.g-tap .fg{animation:gTap 1.4s infinite}
+@keyframes rip{0%,25%{transform:scale(.8);opacity:0}30%{transform:scale(.8);opacity:1}70%,100%{transform:scale(2.6);opacity:0}}.rip{transform-box:fill-box;transform-origin:center}
+.rip{animation:rip 1.4s infinite}
+@keyframes gLR{0%,40%{transform:translate(40px,45px)}50%,90%{transform:translate(120px,45px)}100%{transform:translate(40px,45px)}}
+.g-lr{animation:gLR 2.4s infinite}
+@keyframes ripL{0%,5%{transform:scale(.8);opacity:0}10%{opacity:1;transform:scale(.8)}35%,100%{transform:scale(2.4);opacity:0}}
+.ripL{animation:ripL 2.4s infinite}.ripR{animation:ripL 2.4s 1.2s infinite}
+@keyframes ring{0%{stroke-dashoffset:138}80%,100%{stroke-dashoffset:0}}
+.ring{animation:ring 2s infinite}
+@keyframes gDrag{0%,100%{transform:translate(45px,0)}50%{transform:translate(115px,0)}}
+.g-drag{animation:gDrag 2.4s ease-in-out infinite}
+@keyframes gAim{0%{transform:translate(50px,60px)}35%,45%{transform:translate(22px,76px)}55%,100%{transform:translate(22px,76px);opacity:0}}
+.g-aim{animation:gAim 2.6s infinite}
+@keyframes pull{0%,10%{opacity:0}30%,45%{opacity:1}50%,100%{opacity:0}}.pull{animation:pull 2.6s infinite}
+@keyframes ball{0%,45%{transform:translate(0,0)}60%{transform:translate(40px,-45px)}75%,100%{transform:translate(85px,-30px)}}.ball{animation:ball 2.6s infinite}
+@keyframes gSw{0%{transform:translate(50px,70px)}40%{transform:translate(50px,30px)}75%,100%{transform:translate(110px,30px)}}.g-swipe{animation:gSw 2s ease-in-out infinite}
+@keyframes trail{0%{stroke-dasharray:0 200}75%,100%{stroke-dasharray:100 200}}.trail{animation:trail 2s ease-in-out infinite}
+@keyframes gPk{0%{transform:translate(130px,80px)}40%,100%{transform:translate(80px,45px)}}.g-pick{animation:gPk 2.2s ease-out infinite}
+@keyframes pk{0%,45%{fill:#FBFCFB}55%,100%{fill:#B8D9C3}}.pk{animation:pk 2.2s infinite}
+@keyframes gP2{0%{transform:translate(45px,80px)}20%,35%{transform:translate(45px,45px)}65%,100%{transform:translate(115px,45px)}}.g-p2{animation:gP2 2.6s ease-in-out infinite}
+@keyframes pa{0%,20%{fill:#FBFCFB}25%,100%{fill:#E4ECF7}}.pa{animation:pa 2.6s infinite}
+@keyframes pb{0%,65%{fill:#FBFCFB}70%,100%{fill:#B8D9C3}}.pb{animation:pb 2.6s infinite}
+@media (prefers-reduced-motion:reduce){.gest *{animation:none!important}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
@@ -215,6 +244,7 @@ textarea.fbt{width:100%;min-height:80px;border:2.5px solid var(--ink);border-rad
     <button class="icon-btn" id="back" aria-label="Back to games"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
     <div id="stTitle"></div>
     <div id="hud"></div>
+    <button class="icon-btn" id="pauseB" aria-label="Pause" hidden><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg></button>
   </div>
   <div class="cvwrap"><canvas id="cv"></canvas><div id="panel" hidden></div></div>
 </div>
@@ -1300,6 +1330,7 @@ const GFORM={id:'1FAIpQLSedCKAxMGiiqUzFUW6UmdG7yMaSJiqXm0-QsymaK1nRLDXazQ',game:
 function track(path,title){if(!GOATCOUNTER_CODE)return;const go=()=>{try{window.goatcounter&&window.goatcounter.count&&window.goatcounter.count({path,title:title||path,event:true});}catch(e){}};if(window.goatcounter&&window.goatcounter.count)go();else setTimeout(go,1500);}
 let pendingFb=null,fbTimer=0;
 function queueFb(o){pendingFb=Object.assign(pendingFb||{},o);clearTimeout(fbTimer);fbTimer=setTimeout(flushFb,8000);}
+function postForm(f){if(!GFORM.id)return false;try{const body=new URLSearchParams();body.append(GFORM.game,f.game||'');body.append(GFORM.rating,f.rating||'');body.append(GFORM.reasons,Array.isArray(f.reasons)?f.reasons.join(', '):(f.reasons||''));if(GFORM.comment)body.append(GFORM.comment,f.comment||'');fetch(`https://docs.google.com/forms/d/e/${GFORM.id}/formResponse`,{method:'POST',mode:'no-cors',body,keepalive:true}).catch(()=>{});return true;}catch(e){return false;}}
 function flushFb(){clearTimeout(fbTimer);const f=pendingFb;pendingFb=null;if(!f||!GFORM.id)return;
  try{const body=new URLSearchParams();body.append(GFORM.game,f.game||'');body.append(GFORM.rating,f.rating||'');body.append(GFORM.reasons,(f.reasons||[]).join(', '));if(GFORM.comment)body.append(GFORM.comment,f.comment||'');
   fetch(`https://docs.google.com/forms/d/e/${GFORM.id}/formResponse`,{method:'POST',mode:'no-cors',body,keepalive:true}).catch(()=>{});}catch(e){}}
@@ -1328,6 +1359,22 @@ function wireAppFb(){const el=$('#appFb');if(el)wireFb(el,'app','the app overall
 function tipHTML(){const standalone=window.matchMedia&&matchMedia('(display-mode: standalone)').matches||navigator.standalone;const touch='ontouchstart' in window||navigator.maxTouchPoints>0;
  if(standalone||!touch||S.tipHidden)return'';const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
  return`<div class="box tip"><div style="flex:1"><b>Play it like an app</b><p class="small" style="margin:4px 0 0">${ios?'Tap the Share button in Safari, then <b style="font-size:14px">Add to Home Screen</b>.':'Tap the browser menu (⋮), then <b style="font-size:14px">Add to Home screen</b>.'} Pocket Plays then opens full screen with one tap.</p></div><button class="btn" id="tipB" style="min-height:40px;padding:6px 12px">Got it</button></div>`;}
+
+/* ---------- how-to-play gesture animations ---------- */
+const GEST={lanes:'tapLR',snake:'swipe',glide:'tap',skyhop:'drag',fliprun:'tap',hurdle:'tap',stack:'tap',bullseye:'tap',beat:'tap',golf:'aim',lander:'hold',bricks:'drag',ttt:'pick',four:'pick',reversi:'pick',sequence:'pick',recall:'pick',estimate:'pick',hockey:'drag',pong:'drag',quickdraw:'tap',whack:'pick',pairs:'pick',sums:'pick',soundmem:'pick',vanish:'pick',path:'pick',blink:'tap',chaos:'pick',three:'pick',spot:'pick',opposite:'pick',mirror:'drag',invert:'drag',rules:'tapLR',sort:'tapLR',blocks:'drag',cannons:'aim',tally:'pick',towers:'pick2',sudoku:'pick2',slide:'pick',jam:'drag',maze:'drag',checkers:'pick2',chess:'pick2'};
+const GLBL={tap:'Tap the screen',tapLR:'Tap the left or right side',hold:'Press and hold',drag:'Touch and drag',aim:'Drag back, then let go',swipe:'Swipe to steer',pick:'Tap the right one',pick2:'Tap one, then tap where it goes'};
+function gestureSVG(k){const F='<circle class="fg" r="9" fill="#23313D" fill-opacity=".85" stroke="#FBFCFB" stroke-width="2.5"/>';
+ const tile=(x,y,cls='')=>`<rect class="${cls}" x="${x}" y="${y}" width="30" height="30" rx="7" fill="#FBFCFB" stroke="#23313D" stroke-width="2.5"/>`;
+ const body={
+  tap:`<circle class="rip" cx="80" cy="45" r="12" fill="none" stroke="#5B83C4" stroke-width="3"/><g class="g-tap" transform="translate(80 45)">${F}</g>`,
+  tapLR:`<line x1="80" y1="8" x2="80" y2="82" stroke="#23313D" stroke-width="2" stroke-dasharray="4 4"/><circle class="rip ripL" cx="40" cy="45" r="12" fill="none" stroke="#5B83C4" stroke-width="3"/><circle class="rip ripR" cx="120" cy="45" r="12" fill="none" stroke="#E07A6B" stroke-width="3"/><g class="g-lr">${F}</g>`,
+  hold:`<circle cx="80" cy="45" r="22" fill="none" stroke="#C8CCC6" stroke-width="5"/><circle class="ring" cx="80" cy="45" r="22" fill="none" stroke="#4FA37A" stroke-width="5" stroke-dasharray="138" transform="rotate(-90 80 45)"/><g transform="translate(80 45)">${F}</g>`,
+  drag:`<line x1="30" y1="60" x2="130" y2="60" stroke="#C8CCC6" stroke-width="4" stroke-linecap="round"/><g class="g-drag"><rect x="-16" y="52" width="32" height="16" rx="6" fill="#5B83C4" stroke="#23313D" stroke-width="2.5"/><g transform="translate(0 44)">${F}</g></g>`,
+  aim:`<path class="arc" d="M50 60 Q90 -5 135 30" fill="none" stroke="#23313D" stroke-width="2" stroke-dasharray="4 5"/><circle cx="135" cy="30" r="9" fill="#FBFCFB" stroke="#E07A6B" stroke-width="3"/><circle class="ball" cx="50" cy="60" r="7" fill="#E3B85C" stroke="#23313D" stroke-width="2"/><line class="pull" x1="50" y1="60" x2="22" y2="76" stroke="#23313D" stroke-width="2" stroke-dasharray="3 3"/><g class="g-aim">${F}</g>`,
+  swipe:`<path class="trail" d="M50 70 L50 30 L110 30" fill="none" stroke="#5B83C4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><g class="g-swipe">${F}</g>`,
+  pick:`${tile(28,30)}${tile(65,30,'pk')}${tile(102,30)}<g class="g-pick">${F}</g>`,
+  pick2:`${tile(30,30,'pa')}<circle cx="45" cy="45" r="8" fill="#E07A6B" stroke="#23313D" stroke-width="2"/>${tile(100,30,'pb')}<path class="arr" d="M64 45 H94" stroke="#23313D" stroke-width="2.5" stroke-dasharray="4 4" marker-end="url(#ah)"/><g class="g-p2">${F}</g>`};
+ return`<div class="gest"><svg viewBox="0 0 160 90" role="img" aria-label="${GLBL[k]}"><defs><marker id="ah" markerWidth="6" markerHeight="6" refX="4" refY="3" orient="auto"><path d="M0 0L6 3L0 6z" fill="#23313D"/></marker></defs>${body[k]||body.tap}</svg><span>${GLBL[k]||GLBL.tap}</span></div>`;}
 /* ================= VIEWS ================= */
 let tab='play',query='';const cockpitOn=()=>location.hash==='#cockpit'||S.cockpit===true;
 function setTab(t){if(t==='cockpit'&&!cockpitOn())t='play';tab=t;
@@ -1399,9 +1446,9 @@ function skillDetail(p,sk,scs){const o=scs[sk.k],lv=skLv(o.v),games=GAMES.filter
   if(best)note+=`Best game: <b>${best.g.name}</b>. `;if(rank.length>1&&worst.g!==best.g)note+=`Hardest for you: <b>${worst.g.name}</b>. `;
   note+=lv>=8?'Keep it sharp with a harder game.':untried?`Try <b>${untried.name}</b> next to build it further.`:`Replay <b>${worst.g.name}</b> to raise this skill.`;}
  const sug=o.v==null?games[0]:(untried||worst&&worst.g);
- return`<details class="skd"><summary><span class="skn"><span class="dot" style="background:${sk.col}"></span>${sk.id}</span><span class="v">${o.v!=null?'Lv '+lv:'<span class="sub">Not tried</span>'}</span><span class="dl ${d>0?'up':d<0?'dn':''}">${d?(d>0?'▲'+d:'▼'+(-d)):''}</span></summary>
+ return`<details class="skd"><summary><span class="skn"><span class="dot" style="background:${sk.col}"></span>${sk.id}</span>${pips(skMax(p,sk.k),o.v!=null?lv:0,sk.col)}<span class="v">${o.v!=null?'Lv '+lv:'<span class="sub">Not tried</span>'}</span><span class="dl ${d>0?'up':d<0?'dn':''}">${d?(d>0?'▲'+d:'▼'+(-d)):''}</span></summary>
   <div class="skbody"><p class="small" style="margin:0">${sk.tip}.</p><div class="tr" style="height:14px"><span class="fl" style="width:${lv*10}%;background:${sk.col}"></span></div>
-  <div class="skmeta"><span>${tried.length}/${games.length} games tried</span>${spark(p,sk.k,sk.col)}</div>
+  <div class="skmeta"><span><b style="color:var(--ink)">${skMax(p,sk.k)}/10 levels cleared</b>${skMax(p,sk.k)<10?` · next: Lv ${skMax(p,sk.k)+1}`:' · all cleared!'}<br>${tried.length}/${games.length} games tried</span>${spark(p,sk.k,sk.col)}</div>
   ${rank.length?`<div class="list">${rank.map(r=>`<div class="lrow" style="padding-block:5px">${icon(r.g.id).replace('class="ic"','class="ic mini"')}<span class="nm" style="font-weight:700">${r.g.name}</span><span class="val">Lv ${skLv(r.v)}</span></div>`).join('')}</div>`:''}
   <p style="margin:0;font-size:14px">${note}</p>${sug?`<button class="chipb" data-game="${sug.id}">Play ${sug.name}</button>`:''}</div></details>`;}
 function analysis(p,scs){const t=SKILLS.filter(k=>scs[k.k].v!=null);if(!t.length)return'Play a few games from different skills and your analysis will appear here.';
@@ -1415,13 +1462,32 @@ function analysis(p,scs){const t=SKILLS.filter(k=>scs[k.k].v!=null);if(!t.length
  if(up&&up.d>0)L.push(`<b>Biggest improvement this week:</b> ${up.k.id}, up ${up.d} ${up.d===1?'level':'levels'}.`);
  L.push(spread>=4?'Your skills are uneven. Spending a few minutes on your lower skills will balance your profile fastest.':t.length<8?'Try a game from each skill to complete your profile.':'Your profile is well balanced. Push your top skills with harder levels.');
  return L.map(x=>`<p style="margin:0 0 6px">${x}</p>`).join('');}
+function skMax(p,k){let m=(p.skmax&&p.skmax[k])||0;const cur=skillScores(p)[k].v;if(cur!=null)m=Math.max(m,skLv(cur));for(const d of Object.values(p.skh||{}))if(d[k]!=null)m=Math.max(m,skLv(d[k]));return m;}
+function pips(max,cur,col,big){let h='';for(let i=1;i<=10;i++){const f=i<=max,c=i===cur;h+=`<i class="pip${f?' on':''}${c?' cur':''}" style="${f?'background:'+col:''}"></i>`;}return`<span class="pips${big?' big':''}" role="img" aria-label="${max} of 10 levels cleared">${h}</span>`;}
 function skillBox(p){const scs=skillScores(p),t=SKILLS.filter(k=>scs[k.k].v!=null),overall=t.length?Math.round(t.reduce((a,k)=>a+scs[k.k].v,0)/t.length*100):0;
  const ob=overall>=85?'Excellent':overall>=65?'Strong':overall>=45?'Good':overall>=25?'Developing':'Starting';
- return`<div class="box"><div class="lvl-top"><span class="lbl">Overall skill rating</span><span class="pill">${t.length}/8 skills rated</span></div>
+ return`<div class="box"><div class="lvl-top"><span class="lbl">Overall skill rating</span><span class="pill">${SKILLS.reduce((a,k)=>a+skMax(p,k.k),0)}/80 levels cleared</span></div>
   <div style="display:flex;align-items:baseline;gap:10px;margin-top:4px"><span class="big" style="font-size:54px">${t.length?overall:'–'}</span><span class="lvl-name" style="font-size:22px">${t.length?'/ 100 · '+ob:'Not rated yet'}</span></div>
   <div class="chart">${radar(scs)}</div><span class="small">Average of your rated skills. Each skill level (1 to 10) comes from how well you play its games: accuracy, speed, levels reached and moves used, using your best recent rounds.</span></div>
  <div class="box"><span class="lbl">Your analysis</span><div style="margin-top:8px;font-size:15px">${analysis(p,scs)}</div></div>
  <div class="box split"><span class="lbl">Skill by skill · tap to open</span>${SKILLS.map(sk=>skillDetail(p,sk,scs)).join('')}</div>`;}
+function scorePayload(p,age,withNick){const scs=skillScores(p),t=SKILLS.filter(k=>scs[k.k].v!=null),overall=t.length?Math.round(t.reduce((a,k)=>a+scs[k.k].v,0)/t.length*100):0;
+ const plays=Object.values(p.plays).reduce((a,b)=>a+b,0),mins=Math.round(p.log.reduce((a,l)=>a+(l.ms||0),0)/60000),top=Object.entries(p.plays).sort((a,b)=>b[1]-a[1])[0],cl=SKILLS.reduce((a,k)=>a+skMax(p,k.k),0);
+ const skills=SKILLS.map(k=>`${SHORT[k.k]} ${scs[k.k].v!=null?skLv(scs[k.k].v):'-'}`);
+ const details=[`Nickname: ${withNick?p.nick:'(hidden)'}`,`Age group: ${age||'not given'}`,`XP: ${p.xp}`,`Games played: ${plays}`,`Minutes: ${mins}`,`Day streak: ${streakShown(p)}`,`Levels cleared: ${cl}/80`,`Top game: ${top?G(top[0]).name:'-'}`];
+ return{game:'SCORECARD',rating:`Overall ${t.length?overall:'-'}/100 (${t.length}/8 skills rated)`,reasons:skills.join(', '),comment:details.join(' | ')};}
+function openShare(){const p=P();if(!p)return;let age='',nick=true;const m=document.createElement('div');m.className='sheet';m.id='scModal';
+ const draw=()=>{const f=scorePayload(p,age,nick);m.innerHTML=`<form onsubmit="return false"><h3>Share your scorecard</h3><p class="small" style="margin:0">This sends your skill levels and game totals to the creator of Pocket Plays to help improve the games. Nothing is sent unless you tap Send.</p>
+  <span class="lbl">Age group (optional)</span><div class="rchips" style="justify-content:flex-start">${['Under 10','10–12','13–15','16–18','18+'].map(g=>`<button type="button" data-age="${g}" aria-pressed="${age===g}">${g}</button>`).join('')}</div>
+  <label style="display:flex;gap:10px;align-items:center;font-weight:800"><input type="checkbox" id="scNick" ${nick?'checked':''} style="width:22px;height:22px"> Include my nickname (${esc(p.nick)})</label>
+  <div class="note" style="font-size:13px"><b>What will be sent:</b><br>${esc(f.rating)}<br>${esc(f.reasons)}<br>${esc(f.comment)}</div>
+  <div class="prow"><button type="button" class="btn" id="scCancel">Cancel</button><button type="button" class="btn pri" id="scSend" style="flex:1">Send</button></div></form>`;
+  m.querySelectorAll('[data-age]').forEach(b=>b.onclick=()=>{age=age===b.dataset.age?'':b.dataset.age;draw();});
+  m.querySelector('#scNick').onchange=e=>{nick=e.target.checked;draw();};
+  m.querySelector('#scCancel').onclick=()=>m.remove();
+  m.querySelector('#scSend').onclick=()=>{const ok=postForm(scorePayload(p,age,nick));track('scorecard/submit','Scorecard shared');p.shared=(p.shared||0)+1;save();
+   m.querySelector('form').innerHTML=`<h3>${ok?'Sent. Thank you!':'Could not send'}</h3><p class="small" style="margin:0">${ok?'Your scorecard was shared with the creator. You can share again later to show your progress.':'Please check your internet connection and try again.'}</p><button type="button" class="btn pri" id="scDone">Done</button>`;m.querySelector('#scDone').onclick=()=>m.remove();sfx.good();};};
+ draw();m.addEventListener('click',e=>{if(e.target===m)m.remove();});document.body.appendChild(m);}
 function renderScore(){
  const p=P();if(!p){$('#v-score').innerHTML=topbar('Scorecard')+`<p class="note">Create a player to see a scorecard.</p>`;return;}
  const L=level(p.xp),plays=Object.values(p.plays).reduce((a,b)=>a+b,0),mins=Math.round(p.log.reduce((a,l)=>a+(l.ms||0),0)/60000);
@@ -1433,12 +1499,14 @@ function renderScore(){
   <div class="box prof">${avatar(p,true)}<div style="flex:1;min-width:0"><div class="nick">${esc(p.nick)}</div><div class="small">Level ${L.n} · ${L.name} · Rank #${rk} of ${players.length} on this device</div></div></div>
   <div class="tiles"><div class="tile"><b>${p.xp}</b><span>XP</span></div><div class="tile"><b>${streakShown(p)}</b><span>day streak</span></div><div class="tile"><b>${plays}</b><span>games played</span></div></div>
   <div class="tiles"><div class="tile"><b>${mins}</b><span>minutes played</span></div><div class="tile"><b>${wins(p)}</b><span>wins vs computer</span></div><div class="tile"><b>${p.streak.max||streakShown(p)}</b><span>best streak</span></div></div>
+  <button class="btn alt full" id="shareSc">Share my scorecard with the creator</button>
   ${skillBox(p)}
   <div class="box split"><span class="lbl">XP by skill</span>${hrows(byCat)}</div>
   <div class="box chart"><span class="lbl">XP, last 14 days</span>${barChart(days,'#E07A6B')}</div>
   <div class="box"><span class="lbl">Personal bests and records</span><div class="list">${ALL.map(id=>{const g=G(id),bl=bestLine(p,g);return`<div class="lrow">${icon(id).replace('class="ic"','class="ic mini"')}<span class="nm">${g.name}<br><span class="sub">${p.plays[id]||0} played</span></span><span class="val">${bl.replace('Best ','')||'–'}</span></div>`}).join('')}</div></div>
   <button class="btn full" data-act="switch">Switch or add player</button>
  </div>`;
+ $('#shareSc').onclick=openShare;
 }
 
 let rankBy='xp';
@@ -1516,55 +1584,60 @@ function resize(){const r=cv.getBoundingClientRect();if(!r.width||!r.height)retu
 new ResizeObserver(resize).observe(cv);
 const api={get w(){return W},get h(){return H},get mode(){return mode},hud:t=>{hudEl.textContent=t},sfx,toast:(t,col)=>{toasts=[{t,col:col||C.ink,age:0}];},end:res=>{if(done)return;done=true;const tok=runTok;setTimeout(()=>{if(tok===runTok)result(res);},750);}};let runTok=0;
 
-let wake=null;
+let wake=null,paused=false,cd=0,cdShort=false;const SHORTCD=new Set(['sudoku','slide','towers','jam','ttt','four','reversi','checkers','chess']);
+function pauseGame(){if(!inst||done||paused)return;paused=true;panel.hidden=false;panel.innerHTML=`<div class="pcard"><h3>Paused</h3><p>Take your time. Your game is waiting.</p>${gestureSVG(GEST[def.id])}<div class="btns"><button class="btn pri" id="resB">Resume</button><div class="btns row" style="margin:0"><button class="btn" id="rstB">Restart</button><button class="btn" id="quitB">All games</button></div></div></div>`;
+ $('#resB').onclick=()=>{paused=false;panel.hidden=true;last=performance.now();cd=Math.max(cd,cdShort?0:1.2);};$('#rstB').onclick=()=>{paused=false;begin();};$('#quitB').onclick=closeGame;}
+
 async function keepAwake(on){try{if(on&&navigator.wakeLock&&!wake){wake=await navigator.wakeLock.request('screen');}else if(!on&&wake){await wake.release();wake=null;}}catch(e){wake=null;}}
 function openGame(id){def=G(id);stage.hidden=false;$('#stTitle').textContent=def.name;hudEl.textContent='';inst=null;done=false;toasts=[];requestAnimationFrame(resize);intro();if(!raf){last=performance.now();raf=requestAnimationFrame(frame);}keepAwake(true);}
 function closeGame(){runTok++;flushFb();stage.hidden=true;cancelAnimationFrame(raf);raf=0;inst=null;panel.hidden=true;keepAwake(false);render();}
 const MODE_LABEL={cpu:'Start'};
-function intro(){panel.hidden=false;const daily=def.id===dailyId();
+function intro(){panel.hidden=false;$('#pauseB').hidden=true;const daily=def.id===dailyId();
  const btns=def.modes?def.modes.map((m,i)=>`<button class="btn ${i?'alt':'pri'}" data-mode="${m}">${MODE_LABEL[m]}</button>`).join(''):`<button class="btn pri" data-mode="solo">Start</button>`;
- panel.innerHTML=`<div class="pcard">${icon(def.id)}<h3>${def.name}</h3><span class="lbl">Trains: ${Object.keys(def.sk||{}).map(k=>SK(k).id).join(' · ')}</span><p>${def.how}</p>${daily?'<p style="color:var(--red);font-weight:800">Game of the day: 2× XP</p>':''}<div class="btns">${btns}</div></div>`;
+ panel.innerHTML=`<div class="pcard">${icon(def.id)}<h3>${def.name}</h3><span class="lbl">Trains: ${Object.keys(def.sk||{}).map(k=>SK(k).id).join(' · ')}</span>${gestureSVG(GEST[def.id])}<p>${def.how}</p>${daily?'<p style="color:var(--red);font-weight:800">Game of the day: 2× XP</p>':''}<div class="btns">${btns}</div></div>`;
  panel.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>begin(b.dataset.mode));}
-function begin(m){runTok++;flushFb();if(m)mode=m;track('start/'+def.id,'Start '+def.name);resize();panel.hidden=true;toasts=[];done=false;runMs=0;S.starts[def.id]=(S.starts[def.id]||0)+1;if(def.modes){S.modes[mode]=(S.modes[mode]||0)+1;}save();hudEl.textContent='';inst=def.create(api);sfx.tick();}
-function result(res){
+function begin(m){runTok++;paused=false;cdShort=SHORTCD.has(def.id);cd=cdShort?1:3.2;$('#pauseB').hidden=false;flushFb();if(m)mode=m;track('start/'+def.id,'Start '+def.name);resize();panel.hidden=true;toasts=[];done=false;runMs=0;S.starts[def.id]=(S.starts[def.id]||0)+1;if(def.modes){S.modes[mode]=(S.modes[mode]||0)+1;}save();hudEl.textContent='';inst=def.create(api);sfx.tick();}
+function result(res){$('#pauseB').hidden=true;
  const p=P();let xp=Math.max(0,Math.round(res.xp||0));const daily=def.id===dailyId();if(daily)xp*=2;
  let bestNote='';
  if(!def.modes){const prev=p.best[def.id],isBest=prev==null||res.score>prev;if(isBest)p.best[def.id]=res.score;bestNote=isBest?'New personal best!':'Best: '+def.fmt(p.best[def.id]);}
  else if(res.outcome){p.rec=p.rec||{};const r=p.rec[def.id]||(p.rec[def.id]={w:0,l:0,d:0});r[res.outcome==='win'?'w':res.outcome==='loss'?'l':'d']++;bestNote=`Record vs computer: ${r.w}W ${r.l}L ${r.d}D`;}
  p.xp+=xp;p.plays[def.id]=(p.plays[def.id]||0)+1;streakTouch(p);
- const prevSk=skillScores(p);const perf=res.perf!=null?res.perf:def.modes?(res.outcome==='win'?1:res.outcome==='draw'?.55:.25):clamp((res.score||0)/(def.target||10),0,1);p.perf=p.perf||{};(p.perf[def.id]=p.perf[def.id]||[]).push(Math.round(perf*100)/100);if(p.perf[def.id].length>10)p.perf[def.id].shift();
- const scs=skillScores(p);p.skh=p.skh||{};for(const k of Object.keys(scs)){const a0=skLv(prevSk[k].v),a1=skLv(scs[k].v);if(a1>a0)track(`skill/${k}/lv${a1}`,`${SK(k).id} reached level ${a1}`);}p.skh[today()]=Object.fromEntries(Object.entries(scs).map(([k,o])=>[k,o.v]));
- const skLine=Object.keys(def.sk||{}).map(k=>`${SK(k).id} Lv ${skLv(scs[k].v)}`).join(' · ');
+ const prevSk=skillScores(p);const prevMax=Object.fromEntries(SKILLS.map(k=>[k.k,skMax(p,k.k)]));const perf=res.perf!=null?res.perf:def.modes?(res.outcome==='win'?1:res.outcome==='draw'?.55:.25):clamp((res.score||0)/(def.target||10),0,1);p.perf=p.perf||{};(p.perf[def.id]=p.perf[def.id]||[]).push(Math.round(perf*100)/100);if(p.perf[def.id].length>10)p.perf[def.id].shift();
+ const scs=skillScores(p);p.skh=p.skh||{};for(const k of Object.keys(scs)){const a0=skLv(prevSk[k].v),a1=skLv(scs[k].v);if(a1>a0)track(`skill/${k}/lv${a1}`,`${SK(k).id} reached level ${a1}`);}p.skh[today()]=Object.fromEntries(Object.entries(scs).map(([k,o])=>[k,o.v]));p.skmax=p.skmax||{};const cleared=[];for(const k of Object.keys(scs)){const lv=skLv(scs[k].v);if(lv>prevMax[k]&&(def.sk||{})[k]&&prevMax[k]>0)cleared.push([k,lv]);p.skmax[k]=Math.max(lv,prevMax[k]);}
+ const skLine=Object.keys(def.sk||{}).map(k=>`<span style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px">${SK(k).id} Lv ${skLv(scs[k].v)} ${pips(skMax(p,k),skLv(scs[k].v),SK(k).col)}</span>`).join('');const clearedLine=cleared.map(([k,lv])=>`Level ${lv} cleared in ${SK(k).id}!`).join(' ');if(cleared.length)setTimeout(()=>sfx.good(),400);
  p.log.push({t:Date.now(),g:def.id,s:res.score??null,o:res.outcome||null,x:xp,ms:Math.round(runMs)});if(p.log.length>800)p.log=p.log.slice(-800);
  const d=dayRec(today());d.plays++;d.xp+=xp;save();sfx.end();track('finish/'+def.id,'Finish '+def.name);
  const showNudge=!nudged&&playMs>20*60*1000;if(showNudge){nudged=true;S.rest.shown++;save();}
  panel.hidden=false;
  const again=def.modes?`<button class="btn pri" id="againB">Play again</button>`:`<button class="btn pri" id="againB">Again</button>`;
  panel.innerHTML=`<div class="pcard"><span class="lbl">${esc(p.nick)} · ${def.name}</span>${res.title?`<h3>${esc(res.title)}</h3>`:''}<div class="big" style="color:${res.outcome==='loss'?C.muted:C.red}">+${xp} XP</div>${daily?'<span class="lbl" style="color:var(--red)">Doubled: game of the day</span>':''}
-  <p>${res.text}</p>${bestNote?`<p class="small">${bestNote}</p>`:''}<p class="small" style="font-weight:800;color:var(--ink)">${skLine}</p>
+  <p>${res.text}</p>${bestNote?`<p class="small">${bestNote}</p>`:''}${clearedLine?`<p style="font-weight:800;color:#3A7F5D;margin:0">${clearedLine}</p>`:''}<div class="small" style="font-weight:800;color:var(--ink)">${skLine}</div>
   ${!rated.has(def.id)?fbWidget(def.id,`Enjoying ${def.name}?`):''}
   ${showNudge?`<div class="nudge"><span>You've been playing for 20 minutes. Take a quick break: look away from the screen for 20 seconds for +5 XP.</span><button class="btn" id="restB">Rest 20 seconds</button></div>`:''}
   <div class="btns row"><button class="btn" id="homeB">All games</button>${again}</div></div>`;
  $('#againB').onclick=()=>begin();$('#homeB').onclick=closeGame;wireFb(panel,def.id,def.name,false);
  const rb=$('#restB');if(rb)rb.onclick=()=>{let n=20;rb.disabled=true;S.rest.taken++;save();const tick=()=>{rb.textContent=n>0?`Look far away… ${n}`:'Rested! +5 XP';if(n<=0){p.xp+=5;save();sfx.good();return;}n--;setTimeout(tick,1000);};tick();};
 }
-$('#back').addEventListener('click',closeGame);
+$('#back').addEventListener('click',closeGame);$('#pauseB').addEventListener('click',pauseGame);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!stage.hidden)closeGame();});
-document.addEventListener('visibilitychange',()=>{if(document.hidden)save();else if(!stage.hidden){wake=null;keepAwake(true);}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){save();pauseGame();}else if(!stage.hidden){wake=null;keepAwake(true);}});
 
 function frame(now){
  const dt=Math.min(.05,(now-last)/1000);last=now;
- if(inst&&!document.hidden){inst.update(dt);if(!done){playMs+=dt*1000;runMs+=dt*1000;dayRec(today()).ms+=dt*1000;}}
+ if(cd>0&&!paused&&!document.hidden){const was=cd;cd-=dt;const step=v=>cdShort?(v>.35?0:1):(v>2.2?3:v>1.2?2:v>.4?1:0);if(step(was)!==step(cd))tone(cd>.4&&!cdShort?520:784,.12,'square',.04);}
+ if(inst&&!document.hidden&&!paused&&cd<=0){inst.update(dt);if(!done){playMs+=dt*1000;runMs+=dt*1000;dayRec(today()).ms+=dt*1000;}}
  for(const t of toasts)t.age+=dt;toasts=toasts.filter(t=>t.age<1.3);
  ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle=C.paper;ctx.fillRect(0,0,W,H);
  if(inst){ctx.save();inst.draw(ctx);ctx.restore();}
  for(const t of toasts){const al=t.age>.95?(1.3-t.age)/.35:1;ctx.globalAlpha=al;ctx.font=`800 19px ${FD}`;const tw=Math.min(W-24,ctx.measureText(t.t).width+34),x=(W-tw)/2,y=H*.16-t.age*8;rr(ctx,x+3,y-18,tw,40,20);ctx.fillStyle=C.ink;ctx.fill();rr(ctx,x,y-21,tw,40,20);ctx.fillStyle=C.paper;ctx.fill();ctx.strokeStyle=C.ink;ctx.lineWidth=2.5;ctx.stroke();txt(ctx,t.t,W/2,y-1,19,t.col,800,FD);ctx.globalAlpha=1;}
+ if(inst&&cd>0){ctx.fillStyle='rgba(233,239,241,.72)';ctx.fillRect(0,0,W,H);const lbl=cdShort?(cd>.35?'Ready':'Go!'):(cd>2.2?'3':cd>1.2?'2':cd>.4?'1':'Go!');const sz=lbl.length>2?64:110;circ(ctx,W/2,H*.42,Math.min(W,H)*.2);ctx.fillStyle=C.paper;ctx.fill();ctx.strokeStyle=C.ink;ctx.lineWidth=4;ctx.stroke();txt(ctx,lbl,W/2,H*.42+4,sz,lbl==='Go!'?C.green:C.ink,800,FD);txt(ctx,GLBL[GEST[def.id]]||'',W/2,H*.42+Math.min(W,H)*.2+34,18,C.ink,800,FD);}
  raf=requestAnimationFrame(frame);
 }
 function pt(e){const r=cv.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
-cv.addEventListener('pointerdown',e=>{if(!inst||done)return;try{cv.setPointerCapture(e.pointerId)}catch(_){}const p=pt(e);inst.down&&inst.down(p.x,p.y,e);e.preventDefault();});
-cv.addEventListener('pointermove',e=>{if(!inst||done)return;const p=pt(e);inst.move&&inst.move(p.x,p.y,e);});
-const up=e=>{if(!inst||done)return;const p=pt(e);inst.up&&inst.up(p.x,p.y,e);};
+cv.addEventListener('pointerdown',e=>{if(!inst||done||paused||cd>0)return;try{cv.setPointerCapture(e.pointerId)}catch(_){}const p=pt(e);inst.down&&inst.down(p.x,p.y,e);e.preventDefault();});
+cv.addEventListener('pointermove',e=>{if(!inst||done||paused||cd>0)return;const p=pt(e);inst.move&&inst.move(p.x,p.y,e);});
+const up=e=>{if(!inst||done||paused)return;const p=pt(e);inst.up&&inst.up(p.x,p.y,e);};
 cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
 cv.addEventListener('contextmenu',e=>e.preventDefault());
 cv.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
