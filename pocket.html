@@ -145,6 +145,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-o
 .swatches span{display:block;width:42px;height:42px;border-radius:50%;border:2.5px solid var(--ink)}
 .swatches input:checked+span{box-shadow:0 0 0 3px var(--paper),0 0 0 6px var(--ink)}
 .prow{display:flex;gap:10px}
+.prow2{display:flex;align-items:center;gap:8px;border-bottom:2px dashed rgba(35,49,61,.2)}.prow2 .pick{border-bottom:0;flex:1}.delb{width:44px;height:44px;border-radius:12px;border:2px solid var(--ink);background:var(--paper);display:grid;place-items:center;flex:none;color:#B4564A}.delb svg{width:20px;height:20px}.delq{display:flex;flex-direction:column;gap:8px;padding:8px 0;width:100%;font-size:14px}
 .pick{display:flex;align-items:center;gap:12px;background:none;border:0;border-bottom:2px dashed rgba(35,49,61,.2);text-align:left;min-height:54px;padding:6px 0;width:100%}
 
 #stage{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
@@ -209,7 +210,14 @@ textarea.fbt{width:100%;min-height:80px;border:2.5px solid var(--ink);border-rad
 @keyframes gP2{0%{transform:translate(45px,80px)}20%,35%{transform:translate(45px,45px)}65%,100%{transform:translate(115px,45px)}}.g-p2{animation:gP2 2.6s ease-in-out infinite}
 @keyframes pa{0%,20%{fill:#FBFCFB}25%,100%{fill:#E4ECF7}}.pa{animation:pa 2.6s infinite}
 @keyframes pb{0%,65%{fill:#FBFCFB}70%,100%{fill:#B8D9C3}}.pb{animation:pb 2.6s infinite}
-@media (prefers-reduced-motion:reduce){.gest *{animation:none!important}}
+@keyframes r1{0%,4%{fill:#FBFCFB}6%,14%{fill:#E3B85C}16%,55%{fill:#FBFCFB}58%,64%{fill:#B8D9C3}66%,100%{fill:#FBFCFB}}
+@keyframes r2{0%,18%{fill:#FBFCFB}20%,28%{fill:#E3B85C}30%,68%{fill:#FBFCFB}71%,77%{fill:#B8D9C3}79%,100%{fill:#FBFCFB}}
+@keyframes r3{0%,32%{fill:#FBFCFB}34%,42%{fill:#E3B85C}44%,81%{fill:#FBFCFB}84%,90%{fill:#B8D9C3}92%,100%{fill:#FBFCFB}}
+.r1{animation:r1 5s infinite}.r2{animation:r2 5s infinite}.r3{animation:r3 5s infinite}
+@keyframes gRep{0%,48%{transform:translate(80px,95px);opacity:0}52%{opacity:1;transform:translate(40px,60px)}58%,64%{transform:translate(40px,48px)}71%,77%{transform:translate(80px,48px)}84%,92%{transform:translate(120px,48px)}100%{transform:translate(120px,48px);opacity:0}}
+.g-rep{animation:gRep 5s infinite}
+@keyframes rw{0%,47%{opacity:1}48%,100%{opacity:0}}@keyframes ry{0%,47%{opacity:0}48%,100%{opacity:1}}.rw{animation:rw 5s infinite}.ry{animation:ry 5s infinite}
+@media (prefers-reduced-motion:reduce){.gest *{animation:none!important}.ry{opacity:0}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
@@ -599,29 +607,43 @@ add({id:'reversi',name:'Reversi',cat:'Board and table',modes:['cpu'],blurb:'Flip
  }});
 
 /* ---------- MIND ---------- */
+/* shared "watch then repeat" game used by Sequence and Sound Memory */
+function simonGame(a,o){const notes=o.notes,cols=o.cols;let seq=[],phase='wait',i=0,t=0,lit=-1,input=0,over=false,lives=3,round=0,intro=o.intro?0:-1;
+ const pads=o.pads;const hud=()=>a.hud(`Length ${Math.max(1,seq.length)} · ${hearts(lives)}`);
+ const show=d=>{phase='show';i=0;t=d;lit=-1;input=0;};
+ const add1=()=>{seq.push(Math.floor(Math.random()*4));round++;hud();show(.8);};
+ const endIt=()=>{if(over)return;over=true;phase='done';const sc=Math.max(0,seq.length-1);a.end({score:sc,text:`You remembered a ${o.unit} of ${sc}.`,xp:sc*2});};
+ if(intro===0){phase='intro';t=.6;}else add1();
+ return{update(dt){t-=dt;
+   if(phase==='intro'){if(t<=0){if(lit>=0){lit=-1;intro++;t=.25;if(intro>=4){phase='introdone';t=1.2;a.toast('Now remember the tune',C.ink);}}else{lit=intro;tone(notes[intro],.5,'sine',.09,true);t=.7;}}return;}
+   if(phase==='introdone'){if(t<=0)add1();return;}
+   if(phase==='show'){if(t<=0){const on=Math.max(.38,.62-seq.length*.015);if(lit>=0){lit=-1;i++;t=.28;}else if(i<seq.length){lit=seq[i];tone(notes[lit],on,'sine',.09,o.force);t=on;}else{phase='input';a.toast('Your turn',C.ink);}}return;}
+   if(phase==='input'){if(lit>=0&&t<=0)lit=-1;return;}
+   if(phase==='next'&&t<=0){if(round%5===0){a.checkpoint(`Level ${round/5} cleared!`,`You remembered ${seq.length} in a row with ${hearts(lives)} left. Take a breath, then keep going.`);}add1();return;}
+   if(phase==='retry'&&t<=0){show(.3);hud();}},
+  down(x,y){if(phase!=='input'||over)return;const k=pads().findIndex(p=>inR(x,y,p));if(k<0)return;lit=k;t=.22;tone(notes[k],.25,'sine',.09,o.force);
+   if(k!==seq[input]){lives--;a.sfx.bad();hud();if(lives<=0){endIt();return;}a.toast(`Not quite. Watch again (${lives} left)`,C.red);phase='retry';t=1.2;lit=-1;return;}
+   input++;if(input>=seq.length){a.sfx.good();a.toast(`Correct! Next: ${seq.length+1}`,C.green);phase='next';t=.9;}},
+  finish(){endIt();},
+  draw(c){const ps=pads(),showLit=phase==='show'||phase==='intro'||phase==='input';
+   ps.forEach((p,k)=>{const on=lit===k&&showLit&&(!o.hideShow||phase!=='show'),grow=on?4:0;rr(c,p.x-grow,p.y-grow,p.w+grow*2,p.h+grow*2,20);c.fillStyle=cols[k];c.globalAlpha=on?1:.35;c.fill();c.globalAlpha=1;stroke(c,on?6:3);
+    if(on){rr(c,p.x+10,p.y+10,p.w-20,p.h-20,14);c.fillStyle='rgba(255,255,255,.35)';c.fill();}
+    if(o.labels)txt(c,o.labels[k],p.x+p.w/2,p.y+p.h/2,Math.min(24,p.w*.22),C.ink,800,FD);});
+   const msg=phase==='intro'?`Meet the notes: ${o.labels?o.labels[Math.max(0,Math.min(3,intro))]:''}`:phase==='show'?(o.hideShow?'Listen… ':'Watch… ')+`${Math.min(i+(lit>=0?1:0),seq.length)}/${seq.length}`:phase==='input'?`Your turn: ${input}/${seq.length}`:phase==='retry'?'Watch again':phase==='next'?'Correct!':'';
+   txt(c,msg,a.w/2,24,19,C.ink,800,FD);
+   const n=seq.length,dw=Math.min(18,(a.w-40)/Math.max(n,1));for(let j=0;j<n;j++){circ(c,a.w/2-(n-1)*dw/2+j*dw,52,5);c.fillStyle=phase==='input'&&j<input?C.green:phase==='show'&&j<i?C.ink:C.line2;c.fill();}}};}
 add({id:'sequence',name:'Sequence',cat:'Mind',blurb:'Watch, remember, repeat.',
- how:'Watch the pads light up, then tap them back in the same order. Each round adds one more.',fmt:s=>s+' long',
- create(a){
-  const cols=[C.red,C.blue,C.green,C.gold],notes=[330,392,494,587];let seq=[],phase='show',i=0,t=.8,lit=-1,input=0,over=false;
-  const pads=()=>{const s=Math.min(a.w-48,a.h-120),g=14,p=(s-g)/2,x=(a.w-s)/2,y=(a.h-s)/2;return[0,1,2,3].map(k=>({x:x+(k%2)*(p+g),y:y+Math.floor(k/2)*(p+g),w:p,h:p}));};
-  const add1=()=>{seq.push(Math.floor(Math.random()*4));phase='show';i=0;t=.7;a.hud(`Length ${seq.length}`);};add1();
-  return{update(dt){if(phase!=='show'){if(lit>=0&&phase==='input'){t-=dt;if(t<=0)lit=-1;}return;}t-=dt;const on=Math.max(.28,.55-seq.length*.02);
-    if(t<=0){if(lit>=0){lit=-1;i++;t=.15;if(i>=seq.length){phase='input';input=0;a.toast('Your turn',C.ink);}}else{lit=seq[i];tone(notes[lit],on);t=on;}}},
-   down(x,y){if(phase!=='input'||over)return;const k=pads().findIndex(p=>inR(x,y,p));if(k<0)return;lit=k;t=.2;tone(notes[k],.2);
-    if(k!==seq[input]){over=true;phase='done';a.sfx.bad();const sc=seq.length-1;a.end({score:sc,text:`You remembered a sequence of ${sc}.`,xp:sc*2});return;}
-    input++;if(input>=seq.length){phase='wait';setTimeout(()=>{if(!over)add1();},650);}},
-   draw(c){pads().forEach((p,k)=>{rr(c,p.x,p.y,p.w,p.h,22);c.fillStyle=cols[k];c.globalAlpha=lit===k?1:.35;c.fill();c.globalAlpha=1;stroke(c,lit===k?5:3);});
-    txt(c,phase==='show'?'Watch…':phase==='input'?'Repeat it':'',a.w/2,28,17,C.muted,800,FD);}};
- }});
-
+ how:'The pads light up one at a time. Watch the order. When it says “Your turn”, tap the same pads in the same order. Each round adds one more. A mistake costs a life and shows the pattern again.',fmt:s=>s+' long',
+ create(a){return simonGame(a,{notes:[330,392,494,587],cols:[C.red,C.blue,C.green,C.gold],unit:'pattern',
+  pads:()=>{const s=Math.min(a.w-48,a.h-140),g=14,p=(s-g)/2,x=(a.w-s)/2,y=70+(a.h-80-s)/2;return[0,1,2,3].map(k=>({x:x+(k%2)*(p+g),y:y+Math.floor(k/2)*(p+g),w:p,h:p}));}});}});
 add({id:'recall',name:'Grid Recall',cat:'Mind',blurb:'Remember which tiles lit up.',
  how:'Some tiles light up for a moment. Tap all of them once they go dark. Three wrong taps in total and the game ends.',fmt:s=>s+' rounds',
  create(a){
   const N=5;let round=0,cells=[],found=new Set(),wrong=new Set(),lives=3,phase='show',t=0,over=false;
   const geo=()=>{const s=Math.min(a.w-40,a.h-100),cs=s/N;return{s,cs,x:(a.w-s)/2,y:(a.h-s)/2};};
-  const next=()=>{round++;const n=Math.min(12,2+Math.ceil(round*.8));const all=[...Array(N*N).keys()].sort(()=>Math.random()-.5);cells=all.slice(0,n);found=new Set();wrong=new Set();phase='show';t=Math.max(.9,1.6-round*.03);hud();};
+  const next=()=>{if(round>0&&round%5===0)a.checkpoint(`Level ${round/5} cleared!`,`${round} rounds done with ${hearts(lives)} left. Ready for harder ones?`);round++;const n=Math.min(12,2+Math.ceil(round*.8));const all=[...Array(N*N).keys()].sort(()=>Math.random()-.5);cells=all.slice(0,n);found=new Set();wrong=new Set();phase='show';t=Math.max(.9,1.6-round*.03);hud();};
   const hud=()=>a.hud(`Round ${round} · ${hearts(lives)}`);next();
-  return{update(dt){if(phase==='show'){t-=dt;if(t<=0)phase='input';}else if(phase==='fb'){t-=dt;if(t<=0)next();}},
+  return{finish(){if(!over){over=true;phase='done';const sc=round-1;a.end({score:sc,text:`You cleared ${sc} ${sc===1?'round':'rounds'}.`,xp:sc*2});}},update(dt){if(phase==='show'){t-=dt;if(t<=0)phase='input';}else if(phase==='fb'){t-=dt;if(t<=0)next();}},
    down(x,y){if(phase!=='input'||over)return;const q=geo(),cx=Math.floor((x-q.x)/q.cs),cy=Math.floor((y-q.y)/q.cs);if(cx<0||cy<0||cx>=N||cy>=N)return;const k=cy*N+cx;if(found.has(k)||wrong.has(k))return;
     if(cells.includes(k)){found.add(k);a.sfx.tick();if(found.size===cells.length){a.sfx.good();a.toast('Nice memory',C.green);phase='fb';t=.7;}}
     else{wrong.add(k);lives--;a.sfx.bad();hud();if(lives<=0){over=true;phase='done';const sc=round-1;a.end({score:sc,text:`You cleared ${sc} ${sc===1?'round':'rounds'}.`,xp:sc*2});}}},
@@ -893,26 +915,18 @@ function timerBar(c,a,f){c.fillStyle=C.soft;c.fillRect(0,0,a.w,6);c.fillStyle=C.
 
 /* ---------- WORKING MEMORY ---------- */
 add({id:'soundmem',name:'Sound Memory',sk:{wm:.8,focus:.2},target:8,blurb:'Remember the tune, not the lights.',
- how:'Listen to the notes, then tap the pads to play the same tune back. The pads don’t light up, so use your ears. Turn your sound on.',fmt:s=>s+' notes',
- create(a){const notes=[262,330,392,523],lbl=['Low','Mid','High','Top'];let seq=[],phase='show',i=0,t=.9,input=0,over=false,press=-1,pt=0;
-  const pads=()=>btnRow(a,lbl,a.h*.35,a.h*.3);const add1=()=>{seq.push(Math.floor(Math.random()*4));phase='show';i=0;t=.8;a.hud('Length '+seq.length);};add1();
-  return{update(dt){pt=Math.max(0,pt-dt);if(phase!=='show')return;t-=dt;if(t<=0){if(i>=seq.length){phase='input';input=0;a.toast('Your turn',C.ink);return;}tone(notes[seq[i]],.38,'sine',.09,true);i++;t=Math.max(.42,.62-seq.length*.015);}},
-   down(x,y){if(phase!=='input'||over)return;const k=pads().findIndex(p=>inR(x,y,p));if(k<0)return;press=k;pt=.18;tone(notes[k],.25,'sine',.09,true);
-    if(k!==seq[input]){over=true;phase='done';a.sfx.bad();const sc=seq.length-1;a.end({score:sc,text:`You remembered a tune of ${sc} notes.`,xp:sc*2});return;}
-    input++;if(input>=seq.length){phase='wait';a.sfx.good();setTimeout(()=>{if(!over)add1();},700);}},
-   draw(c){pads().forEach((p,k)=>drawBtn(c,{x:p.x,y:p.y+(press===k&&pt>0?4:0)+ (3-k)*10,w:p.w,h:p.h-(3-k)*10},press===k&&pt>0?C.gold:C.paper,lbl[k]));
-    txt(c,phase==='show'?'Listen…':phase==='input'?`Play it back (${input}/${seq.length})`:'',a.w/2,a.h*.22,20,C.ink,800,FD);
-    if(!S.sound)txt(c,'Sound is off in settings, but this game plays notes anyway',a.w/2,a.h*.8,13,C.muted,700);}};}});
-
+ how:'First you hear the 4 notes, from Low to Top. Then a tune plays without any lights. Tap the pads to play the same tune back. Turn your sound on.',fmt:s=>s+' notes',
+ create(a){return simonGame(a,{notes:[262,330,392,523],cols:['#DCE5EE','#C7D6E6','#AFC4DD','#95B1D3'],labels:['Low','Mid','High','Top'],intro:true,hideShow:true,force:true,unit:'tune',
+  pads:()=>{const top=a.h*.3,bot=a.h-40,gap=10,w=(a.w-32-gap*3)/4;return[0,1,2,3].map(k=>{const h=(bot-top)*(.62+k*.12);return{x:16+k*(w+gap),y:bot-h,w,h};});}});}});
 add({id:'vanish',name:'Vanish',sk:{wm:1},target:12,blurb:'Which one disappeared?',
  how:'Look at the shapes. They get shuffled and one of them vanishes. Pick the missing one. Three mistakes and it’s over.',fmt:s=>s+' rounds',
  create(a){let round=0,lives=3,set=[],shown=[],gone=-1,opts=[],phase='show',t=0,pick=-1,over=false;
   const slots=()=>{const g=gridGeo(a,3,40,150);return[...Array(9).keys()].map(i=>({x:g.x+(i%3+.5)*g.cs,y:g.y+(Math.floor(i/3)+.5)*g.cs,r:g.cs*.3}));};
-  const next=()=>{round++;const n=Math.min(8,3+Math.floor(round/2));const ks=sdShuffle([...Array(8).keys()]).slice(0,n);set=ks.map((k,i)=>({k,s:i}));const pos=sdShuffle([...Array(9).keys()]);set.forEach((o,i)=>o.s=pos[i]);
+  const next=()=>{if(round>0&&round%5===0)a.checkpoint(`Level ${round/5} cleared!`,`${round} rounds with ${hearts(lives)} left. Keep going when you're ready.`);round++;const n=Math.min(8,3+Math.floor(round/2));const ks=sdShuffle([...Array(8).keys()]).slice(0,n);set=ks.map((k,i)=>({k,s:i}));const pos=sdShuffle([...Array(9).keys()]);set.forEach((o,i)=>o.s=pos[i]);
    gone=ks[Math.floor(Math.random()*n)];const p2=sdShuffle([...Array(9).keys()]);shown=ks.filter(k=>k!==gone).map((k,i)=>({k,s:p2[i]}));
    const others=sdShuffle([...Array(8).keys()].filter(k=>k!==gone));opts=sdShuffle([gone,...others.slice(0,3)]);phase='show';t=Math.max(1.2,2.4-round*.06);pick=-1;hud();};
   const hud=()=>a.hud(`Round ${round} · ${hearts(lives)}`);const btns=()=>btnRow(a,opts,a.h-110,80);next();
-  return{update(dt){if(phase==='show'||phase==='blank'||phase==='fb'){t-=dt;if(t<=0){if(phase==='show'){phase='blank';t=.5;}else if(phase==='blank')phase='pick';else if(lives<=0){if(!over){over=true;a.end({score:round-1,text:`You cleared ${round-1} rounds.`,xp:(round-1)*2});}}else next();}}},
+  return{finish(){if(!over){over=true;const sc=Math.max(0,round-1);a.end({score:sc,text:`You finished after ${sc} ${sc===1?'round':'rounds'}.`,xp:sc*2});}},update(dt){if(phase==='show'||phase==='blank'||phase==='fb'){t-=dt;if(t<=0){if(phase==='show'){phase='blank';t=.5;}else if(phase==='blank')phase='pick';else if(lives<=0){if(!over){over=true;a.end({score:round-1,text:`You cleared ${round-1} rounds.`,xp:(round-1)*2});}}else next();}}},
    down(x,y){if(phase!=='pick')return;const k=btns().findIndex(b=>inR(x,y,b));if(k<0)return;pick=k;if(opts[k]===gone){a.sfx.good();a.toast('Sharp memory',C.green);}else{lives--;a.sfx.bad();hud();}phase='fb';t=1;},
    draw(c){const sl=slots();const list=phase==='show'?set:phase==='pick'||phase==='fb'?shown:[];for(const o of list)drawShape(c,o.k,sl[o.s].x,sl[o.s].y,sl[o.s].r);
     txt(c,phase==='show'?'Remember these':phase==='blank'?'':'Which one vanished?',a.w/2,24,17,C.muted,800,FD);
@@ -921,9 +935,9 @@ add({id:'vanish',name:'Vanish',sk:{wm:1},target:12,blurb:'Which one disappeared?
 add({id:'path',name:'Path',sk:{wm:.7,spatial:.3},target:10,blurb:'Follow the lit path, then retrace it.',
  how:'Tiles light up one after another to make a path. Then tap the same tiles in the same order. The path gets longer each round.',fmt:s=>s+' rounds',
  create(a){const N=4;let round=0,lives=3,path=[],phase='show',i=0,t=.6,input=0,lit=-1,bad=-1,over=false;
-  const next=()=>{round++;const k=Math.min(10,3+Math.floor(round/2));path=[Math.floor(Math.random()*16)];while(path.length<k){const p=path[path.length-1],r=Math.floor(p/N),c=p%N,nb=[[r-1,c],[r+1,c],[r,c-1],[r,c+1]].filter(([y,x])=>y>=0&&y<N&&x>=0&&x<N).map(([y,x])=>y*N+x).filter(q=>!path.includes(q));if(!nb.length)break;path.push(nb[Math.floor(Math.random()*nb.length)]);}
+  const next=()=>{if(round>0&&round%5===0)a.checkpoint(`Level ${round/5} cleared!`,`${round} paths done with ${hearts(lives)} left. Next paths get longer.`);round++;const k=Math.min(10,3+Math.floor(round/2));path=[Math.floor(Math.random()*16)];while(path.length<k){const p=path[path.length-1],r=Math.floor(p/N),c=p%N,nb=[[r-1,c],[r+1,c],[r,c-1],[r,c+1]].filter(([y,x])=>y>=0&&y<N&&x>=0&&x<N).map(([y,x])=>y*N+x).filter(q=>!path.includes(q));if(!nb.length)break;path.push(nb[Math.floor(Math.random()*nb.length)]);}
    phase='show';i=0;t=.6;input=0;lit=-1;bad=-1;a.hud(`Round ${round} · ${hearts(lives)}`);};next();
-  return{update(dt){t-=dt;if(phase==='show'&&t<=0){if(lit>=0&&i>=path.length){lit=-1;phase='input';return;}lit=path[i++];a.sfx.tick();t=Math.max(.3,.55-round*.01);}
+  return{finish(){if(!over){over=true;const sc=Math.max(0,round-1);a.end({score:sc,text:`You finished after ${sc} ${sc===1?'round':'rounds'}.`,xp:sc*2});}},update(dt){t-=dt;if(phase==='show'&&t<=0){if(lit>=0&&i>=path.length){lit=-1;phase='input';return;}lit=path[i++];a.sfx.tick();t=Math.max(.3,.55-round*.01);}
     else if(phase==='fb'&&t<=0){if(lives<=0){if(!over){over=true;a.end({score:round-1,text:`You retraced ${round-1} paths.`,xp:(round-1)*2});}}else next();}},
    down(x,y){if(phase!=='input')return;const g=gridGeo(a,N),k=cellAt(g,N,x,y);if(k<0)return;
     if(k===path[input]){input++;a.sfx.tick();if(input>=path.length){a.sfx.good();phase='fb';t=.7;}}else{bad=k;lives--;a.sfx.bad();a.toast('Wrong tile',C.red);phase='fb';t=1.2;a.hud(`Round ${round} · ${hearts(lives)}`);}},
@@ -951,10 +965,10 @@ add({id:'blink',name:'Blink',sk:{wm:.7,focus:.3},target:90,blurb:'Was it the sam
 add({id:'chaos',name:'Chaos',sk:{focus:1},target:10,blurb:'Track several dots at once.',
  how:'Some dots light up. Keep your eyes on them while all the dots move around, then tap every one you followed.',fmt:s=>s+' rounds',
  create(a){const R=16;let round=0,lives=3,D=[],k=2,phase='show',t=1.6,picked=new Set(),bad=-1,over=false;
-  const next=()=>{round++;const n=Math.min(12,6+Math.floor(round/2));k=Math.min(5,2+Math.floor((round-1)/3));const sp=80+round*9;D=[];
+  const next=()=>{if(round>0&&round%5===0)a.checkpoint(`Level ${round/5} cleared!`,`${round} rounds tracked with ${hearts(lives)} left. More dots next.`);round++;const n=Math.min(12,6+Math.floor(round/2));k=Math.min(5,2+Math.floor((round-1)/3));const sp=80+round*9;D=[];
    for(let i=0;i<n;i++){let p,tr=0;do{p={x:rnd(30,a.w-30),y:rnd(40,a.h-30)};tr++;}while(tr<80&&D.some(q=>Math.hypot(q.x-p.x,q.y-p.y)<R*3));const an=Math.random()*Math.PI*2;D.push({...p,vx:Math.cos(an)*sp,vy:Math.sin(an)*sp});}
    phase='show';t=1.8;picked=new Set();bad=-1;a.hud(`Round ${round} · ${hearts(lives)}`);};next();
-  return{update(dt){t-=dt;if(phase==='show'&&t<=0){phase='move';t=4+Math.min(round,10)*.2;}
+  return{finish(){if(!over){over=true;const sc=Math.max(0,round-1);a.end({score:sc,text:`You finished after ${sc} ${sc===1?'round':'rounds'}.`,xp:sc*2});}},update(dt){t-=dt;if(phase==='show'&&t<=0){phase='move';t=4+Math.min(round,10)*.2;}
     else if(phase==='move'){for(const d of D){const tu=rnd(-1.5,1.5)*dt,cs=Math.cos(tu),sn=Math.sin(tu),vx=d.vx*cs-d.vy*sn;d.vy=d.vx*sn+d.vy*cs;d.vx=vx;d.x+=d.vx*dt;d.y+=d.vy*dt;
       if(d.x<R){d.x=R;d.vx=Math.abs(d.vx);}if(d.x>a.w-R){d.x=a.w-R;d.vx=-Math.abs(d.vx);}if(d.y<R+30){d.y=R+30;d.vy=Math.abs(d.vy);}if(d.y>a.h-R){d.y=a.h-R;d.vy=-Math.abs(d.vy);}}if(t<=0)phase='pick';}
     else if(phase==='fb'&&t<=0){if(lives<=0){if(!over){over=true;a.end({score:round-1,text:`You tracked ${round-1} rounds of chaos.`,xp:(round-1)*2});}}else next();}},
@@ -967,9 +981,9 @@ add({id:'three',name:'Three Cups',sk:{focus:1},target:12,blurb:'Keep your eye on
  how:'Watch which cup the ball goes under. The cups swap places. When they stop, tap the cup with the ball.',fmt:s=>s+' found',
  create(a){let round=0,lives=3,slot=[0,1,2],ball=0,swaps=[],cur=null,phase='show',t=1.2,pick=-1,over=false;
   const sx=s=>a.w*(.2+.3*s),cy=()=>a.h*.5,cw=()=>Math.min(90,a.w*.24);
-  const next=()=>{round++;slot=[0,1,2];ball=Math.floor(Math.random()*3);swaps=[];const n=3+round;for(let i=0;i<n;i++){const s=sdShuffle([0,1,2]);swaps.push([s[0],s[1]]);}phase='show';t=1.3;pick=-1;cur=null;a.hud(`Round ${round} · ${hearts(lives)}`);};next();
+  const next=()=>{if(round>0&&round%5===0)a.checkpoint(`Level ${round/5} cleared!`,`${round} finds with ${hearts(lives)} left. The cups get faster.`);round++;slot=[0,1,2];ball=Math.floor(Math.random()*3);swaps=[];const n=3+round;for(let i=0;i<n;i++){const s=sdShuffle([0,1,2]);swaps.push([s[0],s[1]]);}phase='show';t=1.3;pick=-1;cur=null;a.hud(`Round ${round} · ${hearts(lives)}`);};next();
   const dur=()=>Math.max(.2,.55-round*.03);
-  return{update(dt){t-=dt;if(phase==='show'&&t<=0){phase='swap';t=0;}
+  return{finish(){if(!over){over=true;const sc=Math.max(0,round-1);a.end({score:sc,text:`You finished after ${sc} ${sc===1?'round':'rounds'}.`,xp:sc*2});}},update(dt){t-=dt;if(phase==='show'&&t<=0){phase='swap';t=0;}
     if(phase==='swap'){if(!cur||t<=0){if(cur){const [p,q]=cur.s;const ci=slot.indexOf(p),cj=slot.indexOf(q);slot[ci]=q;slot[cj]=p;}if(!swaps.length){phase='pick';cur=null;return;}cur={s:swaps.shift()};t=dur();a.sfx.tick();}}
     if(phase==='fb'&&t<=0){if(lives<=0){if(!over){over=true;a.end({score:round-1,text:`You found the ball ${round-1} times.`,xp:(round-1)*2});}}else next();}},
    down(x,y){if(phase!=='pick')return;for(let i=0;i<3;i++){if(Math.abs(x-sx(slot[i]))<cw()/2+8&&Math.abs(y-cy())<cw()){pick=i;if(i===ball){a.sfx.good();a.toast('Found it!',C.green);}else{lives--;a.sfx.bad();a.hud(`Round ${round} · ${hearts(lives)}`);}phase='fb';t=1.2;}}},
@@ -1361,8 +1375,8 @@ function tipHTML(){const standalone=window.matchMedia&&matchMedia('(display-mode
  return`<div class="box tip"><div style="flex:1"><b>Play it like an app</b><p class="small" style="margin:4px 0 0">${ios?'Tap the Share button in Safari, then <b style="font-size:14px">Add to Home Screen</b>.':'Tap the browser menu (⋮), then <b style="font-size:14px">Add to Home screen</b>.'} Pocket Plays then opens full screen with one tap.</p></div><button class="btn" id="tipB" style="min-height:40px;padding:6px 12px">Got it</button></div>`;}
 
 /* ---------- how-to-play gesture animations ---------- */
-const GEST={lanes:'tapLR',snake:'swipe',glide:'tap',skyhop:'drag',fliprun:'tap',hurdle:'tap',stack:'tap',bullseye:'tap',beat:'tap',golf:'aim',lander:'hold',bricks:'drag',ttt:'pick',four:'pick',reversi:'pick',sequence:'pick',recall:'pick',estimate:'pick',hockey:'drag',pong:'drag',quickdraw:'tap',whack:'pick',pairs:'pick',sums:'pick',soundmem:'pick',vanish:'pick',path:'pick',blink:'tap',chaos:'pick',three:'pick',spot:'pick',opposite:'pick',mirror:'drag',invert:'drag',rules:'tapLR',sort:'tapLR',blocks:'drag',cannons:'aim',tally:'pick',towers:'pick2',sudoku:'pick2',slide:'pick',jam:'drag',maze:'drag',checkers:'pick2',chess:'pick2'};
-const GLBL={tap:'Tap the screen',tapLR:'Tap the left or right side',hold:'Press and hold',drag:'Touch and drag',aim:'Drag back, then let go',swipe:'Swipe to steer',pick:'Tap the right one',pick2:'Tap one, then tap where it goes'};
+const GEST={lanes:'tapLR',snake:'swipe',glide:'tap',skyhop:'drag',fliprun:'tap',hurdle:'tap',stack:'tap',bullseye:'tap',beat:'tap',golf:'aim',lander:'hold',bricks:'drag',ttt:'pick',four:'pick',reversi:'pick',sequence:'repeat',recall:'pick',estimate:'pick',hockey:'drag',pong:'drag',quickdraw:'tap',whack:'pick',pairs:'pick',sums:'pick',soundmem:'repeat',vanish:'pick',path:'repeat',blink:'tap',chaos:'pick',three:'pick',spot:'pick',opposite:'pick',mirror:'drag',invert:'drag',rules:'tapLR',sort:'tapLR',blocks:'drag',cannons:'aim',tally:'pick',towers:'pick2',sudoku:'pick2',slide:'pick',jam:'drag',maze:'drag',checkers:'pick2',chess:'pick2'};
+const GLBL={tap:'Tap the screen',tapLR:'Tap the left or right side',hold:'Press and hold',drag:'Touch and drag',aim:'Drag back, then let go',swipe:'Swipe to steer',pick:'Tap the right one',pick2:'Tap one, then tap where it goes',repeat:'Watch the order, then tap it back'};
 function gestureSVG(k){const F='<circle class="fg" r="9" fill="#23313D" fill-opacity=".85" stroke="#FBFCFB" stroke-width="2.5"/>';
  const tile=(x,y,cls='')=>`<rect class="${cls}" x="${x}" y="${y}" width="30" height="30" rx="7" fill="#FBFCFB" stroke="#23313D" stroke-width="2.5"/>`;
  const body={
@@ -1373,6 +1387,7 @@ function gestureSVG(k){const F='<circle class="fg" r="9" fill="#23313D" fill-opa
   aim:`<path class="arc" d="M50 60 Q90 -5 135 30" fill="none" stroke="#23313D" stroke-width="2" stroke-dasharray="4 5"/><circle cx="135" cy="30" r="9" fill="#FBFCFB" stroke="#E07A6B" stroke-width="3"/><circle class="ball" cx="50" cy="60" r="7" fill="#E3B85C" stroke="#23313D" stroke-width="2"/><line class="pull" x1="50" y1="60" x2="22" y2="76" stroke="#23313D" stroke-width="2" stroke-dasharray="3 3"/><g class="g-aim">${F}</g>`,
   swipe:`<path class="trail" d="M50 70 L50 30 L110 30" fill="none" stroke="#5B83C4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><g class="g-swipe">${F}</g>`,
   pick:`${tile(28,30)}${tile(65,30,'pk')}${tile(102,30)}<g class="g-pick">${F}</g>`,
+  repeat:`${tile(25,30,'r1')}${tile(65,30,'r2')}${tile(105,30,'r3')}<text x="40" y="50" text-anchor="middle" font-size="13" font-weight="800" fill="#23313D" font-family="Nunito,sans-serif">1</text><text x="80" y="50" text-anchor="middle" font-size="13" font-weight="800" fill="#23313D" font-family="Nunito,sans-serif">2</text><text x="120" y="50" text-anchor="middle" font-size="13" font-weight="800" fill="#23313D" font-family="Nunito,sans-serif">3</text><text class="rw" x="80" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#5E6B75" font-family="Nunito,sans-serif">WATCH</text><text class="ry" x="80" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#3A7F5D" font-family="Nunito,sans-serif">YOUR TURN</text><g class="g-rep">${F}</g>`,
   pick2:`${tile(30,30,'pa')}<circle cx="45" cy="45" r="8" fill="#E07A6B" stroke="#23313D" stroke-width="2"/>${tile(100,30,'pb')}<path class="arr" d="M64 45 H94" stroke="#23313D" stroke-width="2.5" stroke-dasharray="4 4" marker-end="url(#ah)"/><g class="g-p2">${F}</g>`};
  return`<div class="gest"><svg viewBox="0 0 160 90" role="img" aria-label="${GLBL[k]}"><defs><marker id="ah" markerWidth="6" markerHeight="6" refX="4" refY="3" orient="auto"><path d="M0 0L6 3L0 6z" fill="#23313D"/></marker></defs>${body[k]||body.tap}</svg><span>${GLBL[k]||GLBL.tap}</span></div>`;}
 /* ================= VIEWS ================= */
@@ -1504,7 +1519,7 @@ function renderScore(){
   <div class="box split"><span class="lbl">XP by skill</span>${hrows(byCat)}</div>
   <div class="box chart"><span class="lbl">XP, last 14 days</span>${barChart(days,'#E07A6B')}</div>
   <div class="box"><span class="lbl">Personal bests and records</span><div class="list">${ALL.map(id=>{const g=G(id),bl=bestLine(p,g);return`<div class="lrow">${icon(id).replace('class="ic"','class="ic mini"')}<span class="nm">${g.name}<br><span class="sub">${p.plays[id]||0} played</span></span><span class="val">${bl.replace('Best ','')||'–'}</span></div>`}).join('')}</div></div>
-  <button class="btn full" data-act="switch">Switch or add player</button>
+  <button class="btn full" data-act="switch">Switch, add or remove players</button>
  </div>`;
  $('#shareSc').onclick=openShare;
 }
@@ -1519,7 +1534,7 @@ function renderRank(){
  $('#v-rank').innerHTML=topbar('Ranking')+`<div class="vstack">
   <div class="chips" role="group" aria-label="Rank by">${chips}</div>
   <div class="box"><div class="list">${rows.length?rows.map((x,i)=>`<div class="lrow${p&&x.id===p.id?' me':''}"><span class="rank">${i+1}</span>${avatar(x)}<span class="nm">${esc(x.nick)}${p&&x.id===p.id?' <span class="sub">(you)</span>':''}<br><span class="sub">${level(x.xp).name}</span></span><span class="val">${fmt(val(x))}</span></div>`).join(''):`<p class="small" style="margin:6px 0">Nobody has a score here yet.</p>`}</div></div>
-  <button class="btn pri full" data-act="add">Add a player</button>
+  <div class="prow"><button class="btn pri" data-act="add" style="flex:1">Add a player</button><button class="btn" data-act="switch" style="flex:1">Manage players</button></div>
   <p class="note">Ranking compares everyone who plays on this phone, tablet or computer, like a family or a class sharing one device.</p>
  </div>`;
  document.querySelectorAll('[data-rank]').forEach(b=>b.onclick=()=>{rankBy=b.dataset.rank;renderRank();const n=document.querySelector(`[data-rank="${rankBy}"]`);n&&n.scrollIntoView({inline:'nearest',block:'nearest'});});
@@ -1563,8 +1578,12 @@ document.addEventListener('click',e=>{
 let pendingGame=null;
 function openSheet(isSwitch,game){pendingGame=game||null;const ps=Object.values(S.players);
  $('#sheetTitle').textContent=ps.length&&isSwitch?'Switch player':ps.length?'Add a player':'Welcome to Pocket Plays';$('#cancelP').textContent=ps.length?'Cancel':'Skip';
- $('#plist').innerHTML=ps.length&&isSwitch?ps.map(x=>`<button type="button" class="pick" data-pick="${x.id}">${avatar(x)}<span style="flex:1;font-weight:800">${esc(x.nick)}</span><span class="small">${x.xp} XP</span></button>`).join('')+'<p class="lbl" style="margin:12px 0 0">Or add someone new</p>':'';
+ $('#plist').innerHTML=ps.length&&isSwitch?ps.map(x=>`<div class="prow2" data-row="${x.id}"><button type="button" class="pick" data-pick="${x.id}">${avatar(x)}<span style="flex:1;font-weight:800">${esc(x.nick)}${x.id===S.cur?' <span class="small">(playing now)</span>':''}</span><span class="small">${x.xp} XP</span></button><button type="button" class="delb" data-del="${x.id}" aria-label="Remove ${esc(x.nick)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></button></div>`).join('')+'<p class="lbl" style="margin:12px 0 0">Or add someone new</p>':'';
  document.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{S.cur=b.dataset.pick;save();closeSheet();render();});
+ document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{const id=b.dataset.del,x=S.players[id],row=document.querySelector(`[data-row="${id}"]`);
+  row.innerHTML=`<div class="delq"><span>Remove <b>${esc(x.nick)}</b>? Their scores and scorecard on this device will be deleted.</span><div class="prow"><button type="button" class="btn" data-keep>Keep</button><button type="button" class="btn pri" data-yes style="background:#B4564A">Remove</button></div></div>`;
+  row.querySelector('[data-keep]').onclick=()=>openSheet(true);
+  row.querySelector('[data-yes]').onclick=()=>{delete S.players[id];if(S.cur===id)S.cur=Object.keys(S.players)[0]||null;save();track('player/removed','Player removed');render();if(Object.keys(S.players).length)openSheet(true);else openSheet(false);};});
  const used=new Set(ps.map(x=>x.color));const def=COLORS.find(c=>!used.has(c))||COLORS[0];
  $('#swatches').innerHTML=COLORS.map((c,i)=>`<label><input type="radio" name="col" value="${c}" ${c===def?'checked':''} aria-label="Color ${i+1}"><span style="background:${c}"></span></label>`).join('');
  $('#nick').value='';$('#sheet').hidden=false;}
@@ -1582,9 +1601,13 @@ const stage=$('#stage'),cv=$('#cv'),ctx=cv.getContext('2d'),panel=$('#panel'),hu
 let W=0,H=0,dpr=1,def=null,inst=null,done=false,toasts=[],raf=0,last=0,playMs=0,runMs=0,nudged=false,mode=null;
 function resize(){const r=cv.getBoundingClientRect();if(!r.width||!r.height)return;dpr=Math.min(3,window.devicePixelRatio||1);W=r.width;H=r.height;cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);}
 new ResizeObserver(resize).observe(cv);
-const api={get w(){return W},get h(){return H},get mode(){return mode},hud:t=>{hudEl.textContent=t},sfx,toast:(t,col)=>{toasts=[{t,col:col||C.ink,age:0}];},end:res=>{if(done)return;done=true;const tok=runTok;setTimeout(()=>{if(tok===runTok)result(res);},750);}};let runTok=0;
+const api={get w(){return W},get h(){return H},get mode(){return mode},hud:t=>{hudEl.textContent=t},sfx,checkpoint:(title,msg)=>checkpoint(title,msg),toast:(t,col)=>{toasts=[{t,col:col||C.ink,age:0}];},end:res=>{if(done)return;done=true;const tok=runTok;setTimeout(()=>{if(tok===runTok)result(res);},750);}};let runTok=0;
 
 let wake=null,paused=false,cd=0,cdShort=false;const SHORTCD=new Set(['sudoku','slide','towers','jam','ttt','four','reversi','checkers','chess']);
+function checkpoint(title,msg){if(!inst||done)return;paused=true;sfx.good();panel.hidden=false;
+ panel.innerHTML=`<div class="pcard"><span class="lbl">${def.name}</span><h3>${esc(title)}</h3><p>${esc(msg)}</p><div class="btns"><button class="btn pri" id="cpGo">Continue</button><button class="btn" id="cpStop">Finish here and save</button></div></div>`;
+ $('#cpGo').onclick=()=>{paused=false;panel.hidden=true;last=performance.now();cdShort=false;cd=1.2;};
+ $('#cpStop').onclick=()=>{paused=false;panel.hidden=true;inst.finish&&inst.finish();};}
 function pauseGame(){if(!inst||done||paused)return;paused=true;panel.hidden=false;panel.innerHTML=`<div class="pcard"><h3>Paused</h3><p>Take your time. Your game is waiting.</p>${gestureSVG(GEST[def.id])}<div class="btns"><button class="btn pri" id="resB">Resume</button><div class="btns row" style="margin:0"><button class="btn" id="rstB">Restart</button><button class="btn" id="quitB">All games</button></div></div></div>`;
  $('#resB').onclick=()=>{paused=false;panel.hidden=true;last=performance.now();cd=Math.max(cd,cdShort?0:1.2);};$('#rstB').onclick=()=>{paused=false;begin();};$('#quitB').onclick=closeGame;}
 
