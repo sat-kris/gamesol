@@ -94,6 +94,13 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-o
 .skn{display:flex;align-items:center;gap:6px;min-width:0}.skn .dot{width:12px;height:12px;border-radius:4px;border:2px solid var(--ink);flex:none}
 .skrow .tr{height:14px;border-radius:7px;background:var(--soft);border:2px solid var(--ink);overflow:hidden}.skrow .fl{height:100%;display:block}.skrow .v{font-weight:800;text-align:right;font-variant-numeric:tabular-nums}
 .dl{font-size:12px;font-weight:800}.dl.up{color:#3A7F5D}.dl.dn{color:#B4564A}
+.skd{border-bottom:2px dashed rgba(35,49,61,.2);padding-block:8px}.skd:last-child{border-bottom:0}
+.skd summary{display:grid;grid-template-columns:1fr auto 34px;align-items:center;gap:8px;cursor:pointer;list-style:none;font-weight:800;font-size:15px;min-height:36px}
+.skd summary::-webkit-details-marker{display:none}.skd summary:after{content:'';}
+.skd[open] summary{margin-bottom:8px}.skbody{display:flex;flex-direction:column;gap:8px}
+.skbody .tr{border-radius:7px;background:var(--soft);border:2px solid var(--ink);overflow:hidden}.skbody .fl{display:block;height:100%}
+.skmeta{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted);font-weight:700}
+.ic.mini{width:30px;height:30px;border-radius:9px;border:2px solid var(--ink);display:grid;place-items:center;flex:none}.ic.mini svg{width:20px;height:20px}
 .hrow{display:grid;grid-template-columns:110px 1fr auto;align-items:center;gap:10px;font-size:14px}
 .hrow .tr{height:14px;border-radius:7px;background:var(--soft);border:2px solid var(--ink);overflow:hidden}
 .hrow .fl{height:100%;display:block;background:var(--blue)}
@@ -1372,13 +1379,49 @@ function barChart(rows,col){
 function lastDays(n){const out=[];for(let i=n-1;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);out.push({key:dayStr(d),label:i===0?'Today':d.toLocaleDateString(undefined,{day:'numeric',month:'short'})});}return out;}
 const hrows=rows=>{const max=Math.max(1,...rows.map(r=>r.v));return rows.map(r=>`<div class="hrow"><span>${esc(r.k)}</span><span class="tr"><span class="fl" style="width:${r.v/max*100}%;background:${r.c||'var(--blue)'}"></span></span><span class="v">${r.t??r.v}</span></div>`).join('');};
 
-function skillBox(p){const scs=skillScores(p),tested=SKILLS.filter(s2=>scs[s2.k].v!=null);
- const rows=SKILLS.map(s2=>{const o=scs[s2.k],lv=skLv(o.v),d=o.v!=null?skillDelta(p,s2.k):null;return`<div class="skrow"><span class="skn"><span class="dot" style="background:${s2.col}"></span>${s2.id}</span><span class="tr">${o.v!=null?`<span class="fl" style="width:${lv*10}%;background:${s2.col}"></span>`:''}</span><span class="v">${o.v!=null?'Lv '+lv:'<span class="sub">Not tried</span>'}</span><span class="dl ${d>0?'up':d<0?'dn':''}">${d?(d>0?'▲'+d:'▼'+(-d)):''}</span></div>`;}).join('');
- let tip='Play a few different games to build your skill profile.';
- if(tested.length){const best=tested.reduce((a,b)=>scs[a.k].v>=scs[b.k].v?a:b),untried=SKILLS.filter(s2=>scs[s2.k].v==null),weak=untried[0]||tested.reduce((a,b)=>scs[a.k].v<=scs[b.k].v?a:b);
-  const sug=GAMES.filter(g=>g.prim===weak.k).sort((a,b)=>(p.plays[a.id]||0)-(p.plays[b.id]||0))[0];
-  tip=`<b>Strongest:</b> ${best.id}. <b>${untried.length?'Not tried yet':'Needs practice'}:</b> ${weak.id}.${sug?` <button class="chipb" data-game="${sug.id}" style="margin-top:6px">Try ${sug.name}</button>`:''}`;}
- return`<div class="box split"><span class="lbl">Skill profile · level 1 to 10</span>${rows}<div class="small" style="color:var(--ink)">${tip}</div><span class="small">Levels come from how well you play (accuracy, speed, levels reached), using your best recent games. ▲▼ shows the change over the last 7 days.</span></div>`;}
+const SHORT={wm:'Memory',focus:'Focus',self:'Control',flex:'Flexible',plan:'Planning',spatial:'Spatial',speed:'Speed',num:'Numbers'};
+const band=lv=>lv>=9?'Excellent':lv>=7?'Strong':lv>=5?'Good':lv>=3?'Developing':'Starting';
+function radar(scs){const cx=150,cy=140,R=100,n=SKILLS.length,pt=(i,r)=>[cx+Math.sin(i/n*2*Math.PI)*r,cy-Math.cos(i/n*2*Math.PI)*r];
+ let s=`<svg viewBox="0 0 300 290" role="img" aria-label="Skill radar: ${SKILLS.map(k=>SHORT[k.k]+' '+(scs[k.k].v==null?'not tried':'level '+skLv(scs[k.k].v))).join(', ')}">`;
+ for(const lv of[2.5,5,7.5,10]){s+=`<polygon points="${SKILLS.map((_,i)=>pt(i,R*lv/10).join(',')).join(' ')}" fill="none" stroke="rgba(35,49,61,${lv===10?.35:.15})" stroke-width="1.2"/>`;}
+ SKILLS.forEach((k,i)=>{const [x,y]=pt(i,R),[lx,ly]=pt(i,R+22);s+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="rgba(35,49,61,.15)"/><text x="${lx}" y="${ly+4}" font-size="12" font-weight="800" text-anchor="middle" fill="#23313D" font-family="Nunito,sans-serif">${SHORT[k.k]}</text>`;});
+ const pts=SKILLS.map((k,i)=>pt(i,R*Math.max(.4,skLv(scs[k.k].v))/10));
+ s+=`<polygon points="${pts.map(p=>p.join(',')).join(' ')}" fill="rgba(91,131,196,.28)" stroke="#5B83C4" stroke-width="2.5" stroke-linejoin="round"/>`;
+ SKILLS.forEach((k,i)=>{const v=scs[k.k].v;if(v==null)return;const [x,y]=pts[i];s+=`<circle cx="${x}" cy="${y}" r="5" fill="${k.col}" stroke="#23313D" stroke-width="1.8"><title>${k.id}: level ${skLv(v)}</title></circle>`;});
+ return s+'</svg>';}
+function spark(p,k,col){const h=p.skh||{},days=lastDays(14).map(d=>h[d.key]&&h[d.key][k]!=null?skLv(h[d.key][k]):null);const pts=days.map((v,i)=>v==null?null:[4+i*(112/13),30-v*2.6]).filter(Boolean);
+ if(pts.length<2)return'<span class="sub">Trend shows after 2 days of play</span>';
+ return`<svg viewBox="0 0 120 34" width="120" height="34" aria-hidden="true"><polyline points="${pts.map(q=>q.join(',')).join(' ')}" fill="none" stroke="${col}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="${pts[pts.length-1][0]}" cy="${pts[pts.length-1][1]}" r="3.5" fill="${col}" stroke="#23313D" stroke-width="1.5"/></svg>`;}
+function skillDetail(p,sk,scs){const o=scs[sk.k],lv=skLv(o.v),games=GAMES.filter(g=>(g.sk||{})[sk.k]),tried=games.filter(g=>gamePerf(p,g.id)!=null),d=o.v!=null?skillDelta(p,sk.k):null;
+ const rank=tried.map(g=>({g,v:gamePerf(p,g.id)})).sort((a,b)=>b.v-a.v),best=rank[0],worst=rank[rank.length-1],untried=games.filter(g=>!tried.includes(g)).sort((a,b)=>(b.sk[sk.k]||0)-(a.sk[sk.k]||0))[0];
+ let note;if(o.v==null)note=`Not tried yet. Start with <b>${games[0].name}</b> to get your first rating.`;
+ else{note=`${band(lv)} (level ${lv}). `;if(d>0)note+=`Up ${d} ${d===1?'level':'levels'} this week. `;else if(d<0)note+=`Down ${-d} this week. A few more rounds will bring it back. `;
+  if(best)note+=`Best game: <b>${best.g.name}</b>. `;if(rank.length>1&&worst.g!==best.g)note+=`Hardest for you: <b>${worst.g.name}</b>. `;
+  note+=lv>=8?'Keep it sharp with a harder game.':untried?`Try <b>${untried.name}</b> next to build it further.`:`Replay <b>${worst.g.name}</b> to raise this skill.`;}
+ const sug=o.v==null?games[0]:(untried||worst&&worst.g);
+ return`<details class="skd"><summary><span class="skn"><span class="dot" style="background:${sk.col}"></span>${sk.id}</span><span class="v">${o.v!=null?'Lv '+lv:'<span class="sub">Not tried</span>'}</span><span class="dl ${d>0?'up':d<0?'dn':''}">${d?(d>0?'▲'+d:'▼'+(-d)):''}</span></summary>
+  <div class="skbody"><p class="small" style="margin:0">${sk.tip}.</p><div class="tr" style="height:14px"><span class="fl" style="width:${lv*10}%;background:${sk.col}"></span></div>
+  <div class="skmeta"><span>${tried.length}/${games.length} games tried</span>${spark(p,sk.k,sk.col)}</div>
+  ${rank.length?`<div class="list">${rank.map(r=>`<div class="lrow" style="padding-block:5px">${icon(r.g.id).replace('class="ic"','class="ic mini"')}<span class="nm" style="font-weight:700">${r.g.name}</span><span class="val">Lv ${skLv(r.v)}</span></div>`).join('')}</div>`:''}
+  <p style="margin:0;font-size:14px">${note}</p>${sug?`<button class="chipb" data-game="${sug.id}">Play ${sug.name}</button>`:''}</div></details>`;}
+function analysis(p,scs){const t=SKILLS.filter(k=>scs[k.k].v!=null);if(!t.length)return'Play a few games from different skills and your analysis will appear here.';
+ const srt=[...t].sort((a,b)=>scs[b.k].v-scs[a.k].v),top=srt.slice(0,Math.min(2,srt.length)),low=srt.length>2?srt.slice(-2).reverse():[],un=SKILLS.filter(k=>scs[k.k].v==null);
+ const deltas=t.map(k=>({k,d:skillDelta(p,k.k)})).filter(x=>x.d),up=deltas.sort((a,b)=>b.d-a.d)[0];
+ const spread=srt.length>1?skLv(scs[srt[0].k].v)-skLv(scs[srt[srt.length-1].k].v):0;
+ const L=[];L.push(`You have a rating in <b>${t.length} of 8</b> skills.`);
+ L.push(`<b>Strengths:</b> ${top.map(k=>`${k.id} (Lv ${skLv(scs[k.k].v)})`).join(' and ')}.`);
+ if(low.length)L.push(`<b>Room to grow:</b> ${low.map(k=>`${k.id} (Lv ${skLv(scs[k.k].v)})`).join(' and ')}.`);
+ if(un.length)L.push(`<b>Not tried yet:</b> ${un.map(k=>k.id).join(', ')}.`);
+ if(up&&up.d>0)L.push(`<b>Biggest improvement this week:</b> ${up.k.id}, up ${up.d} ${up.d===1?'level':'levels'}.`);
+ L.push(spread>=4?'Your skills are uneven. Spending a few minutes on your lower skills will balance your profile fastest.':t.length<8?'Try a game from each skill to complete your profile.':'Your profile is well balanced. Push your top skills with harder levels.');
+ return L.map(x=>`<p style="margin:0 0 6px">${x}</p>`).join('');}
+function skillBox(p){const scs=skillScores(p),t=SKILLS.filter(k=>scs[k.k].v!=null),overall=t.length?Math.round(t.reduce((a,k)=>a+scs[k.k].v,0)/t.length*100):0;
+ const ob=overall>=85?'Excellent':overall>=65?'Strong':overall>=45?'Good':overall>=25?'Developing':'Starting';
+ return`<div class="box"><div class="lvl-top"><span class="lbl">Overall skill rating</span><span class="pill">${t.length}/8 skills rated</span></div>
+  <div style="display:flex;align-items:baseline;gap:10px;margin-top:4px"><span class="big" style="font-size:54px">${t.length?overall:'–'}</span><span class="lvl-name" style="font-size:22px">${t.length?'/ 100 · '+ob:'Not rated yet'}</span></div>
+  <div class="chart">${radar(scs)}</div><span class="small">Average of your rated skills. Each skill level (1 to 10) comes from how well you play its games: accuracy, speed, levels reached and moves used, using your best recent rounds.</span></div>
+ <div class="box"><span class="lbl">Your analysis</span><div style="margin-top:8px;font-size:15px">${analysis(p,scs)}</div></div>
+ <div class="box split"><span class="lbl">Skill by skill · tap to open</span>${SKILLS.map(sk=>skillDetail(p,sk,scs)).join('')}</div>`;}
 function renderScore(){
  const p=P();if(!p){$('#v-score').innerHTML=topbar('Scorecard')+`<p class="note">Create a player to see a scorecard.</p>`;return;}
  const L=level(p.xp),plays=Object.values(p.plays).reduce((a,b)=>a+b,0),mins=Math.round(p.log.reduce((a,l)=>a+(l.ms||0),0)/60000);
@@ -1393,7 +1436,7 @@ function renderScore(){
   ${skillBox(p)}
   <div class="box split"><span class="lbl">XP by skill</span>${hrows(byCat)}</div>
   <div class="box chart"><span class="lbl">XP, last 14 days</span>${barChart(days,'#E07A6B')}</div>
-  <div class="box"><span class="lbl">Personal bests and records</span><div class="list">${ALL.map(id=>{const g=G(id),bl=bestLine(p,g);return`<div class="lrow">${icon(id).replace('class="ic"','class="ic" style="width:32px;height:32px;border-radius:9px;background:'+CAT(g.cat).col+'"')}<span class="nm">${g.name}<br><span class="sub">${p.plays[id]||0} played</span></span><span class="val">${bl.replace('Best ','')||'–'}</span></div>`}).join('')}</div></div>
+  <div class="box"><span class="lbl">Personal bests and records</span><div class="list">${ALL.map(id=>{const g=G(id),bl=bestLine(p,g);return`<div class="lrow">${icon(id).replace('class="ic"','class="ic mini"')}<span class="nm">${g.name}<br><span class="sub">${p.plays[id]||0} played</span></span><span class="val">${bl.replace('Best ','')||'–'}</span></div>`}).join('')}</div></div>
   <button class="btn full" data-act="switch">Switch or add player</button>
  </div>`;
 }
@@ -1432,6 +1475,7 @@ function renderCockpit(){
   <div class="box"><span class="lbl">Enjoyment feedback</span><div class="list">${fbRows||'<p class="small" style="margin:6px 0">No feedback yet on this device.</p>'}</div></div>
   <div class="box chart"><span class="lbl">Games finished per day</span>${barChart(days.map(d=>({label:d.label,value:(S.days[d.key]||{}).plays||0})),'#5B83C4')}</div>
   <div class="box split"><span class="lbl">Plays by skill</span>${hrows(perCat)}</div>
+  <div class="box split"><span class="lbl">Average skill level of players on this device</span>${hrows(SKILLS.map(sk=>{const vs=ps.map(q=>skillScores(q)[sk.k].v).filter(v=>v!=null);const av=vs.length?vs.reduce((x,y)=>x+y,0)/vs.length:0;return{k:sk.id,c:sk.col,v:vs.length?skLv(av):0,t:vs.length?"Lv "+skLv(av):"–"};}))}</div>
   <div class="box split"><span class="lbl">Most played games</span>${hrows(perGame.slice(0,10))}</div>
   <div class="box split"><span class="lbl">Lowest finish rate</span>${finish.length?hrows(finish.slice(0,8)):'<span class="small">No games started yet.</span>'}<span class="small">Games people quit early may be too hard or unclear.</span></div>
   <p class="note">This cockpit counts play on this device only. To see every player on every device, Pocket Plays would need a small online database. That's a good next step once people are playing.</p>
@@ -1488,8 +1532,8 @@ function result(res){
  if(!def.modes){const prev=p.best[def.id],isBest=prev==null||res.score>prev;if(isBest)p.best[def.id]=res.score;bestNote=isBest?'New personal best!':'Best: '+def.fmt(p.best[def.id]);}
  else if(res.outcome){p.rec=p.rec||{};const r=p.rec[def.id]||(p.rec[def.id]={w:0,l:0,d:0});r[res.outcome==='win'?'w':res.outcome==='loss'?'l':'d']++;bestNote=`Record vs computer: ${r.w}W ${r.l}L ${r.d}D`;}
  p.xp+=xp;p.plays[def.id]=(p.plays[def.id]||0)+1;streakTouch(p);
- const perf=res.perf!=null?res.perf:def.modes?(res.outcome==='win'?1:res.outcome==='draw'?.55:.25):clamp((res.score||0)/(def.target||10),0,1);p.perf=p.perf||{};(p.perf[def.id]=p.perf[def.id]||[]).push(Math.round(perf*100)/100);if(p.perf[def.id].length>10)p.perf[def.id].shift();
- const scs=skillScores(p);p.skh=p.skh||{};p.skh[today()]=Object.fromEntries(Object.entries(scs).map(([k,o])=>[k,o.v]));
+ const prevSk=skillScores(p);const perf=res.perf!=null?res.perf:def.modes?(res.outcome==='win'?1:res.outcome==='draw'?.55:.25):clamp((res.score||0)/(def.target||10),0,1);p.perf=p.perf||{};(p.perf[def.id]=p.perf[def.id]||[]).push(Math.round(perf*100)/100);if(p.perf[def.id].length>10)p.perf[def.id].shift();
+ const scs=skillScores(p);p.skh=p.skh||{};for(const k of Object.keys(scs)){const a0=skLv(prevSk[k].v),a1=skLv(scs[k].v);if(a1>a0)track(`skill/${k}/lv${a1}`,`${SK(k).id} reached level ${a1}`);}p.skh[today()]=Object.fromEntries(Object.entries(scs).map(([k,o])=>[k,o.v]));
  const skLine=Object.keys(def.sk||{}).map(k=>`${SK(k).id} Lv ${skLv(scs[k].v)}`).join(' · ');
  p.log.push({t:Date.now(),g:def.id,s:res.score??null,o:res.outcome||null,x:xp,ms:Math.round(runMs)});if(p.log.length>800)p.log=p.log.slice(-800);
  const d=dayRec(today());d.plays++;d.xp+=xp;save();sfx.end();track('finish/'+def.id,'Finish '+def.name);
