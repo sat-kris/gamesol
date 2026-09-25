@@ -184,6 +184,18 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-o
 textarea.fbt{width:100%;min-height:80px;border:2.5px solid var(--ink);border-radius:14px;padding:10px 12px;font:600 16px/1.4 var(--fb);background:var(--paper);resize:vertical}
 .tip{display:flex;gap:12px;align-items:flex-start}
 .tip b{font:800 17px/1.2 var(--fd)}
+.lvinfo{width:100%;text-align:left;background:#F4F7F2;border:2px solid rgba(35,49,61,.25);border-radius:14px;padding:10px 12px}.lvinfo ul{margin:6px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:5px;font-size:13.5px;color:var(--ink)}.lvnow{display:flex;flex-direction:column;gap:4px;font-weight:800}.lvnow>span{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lvpick{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}.lvpick button{border:2px solid var(--ink);background:var(--paper);border-radius:10px;padding:6px 10px;font-weight:800;font-size:13px;min-height:40px}.lvpick button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}.lvpick button:disabled{opacity:.45;border-style:dashed}
+.pcard{max-height:100%;overflow-y:auto}
+.pcard>.btns{position:sticky;bottom:-22px;background:var(--paper);padding-block:8px 4px;margin-bottom:-4px;z-index:1}
+.bgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.bdg{display:flex;flex-direction:column;align-items:center;text-align:center;gap:3px;padding:10px 8px;border:2px dashed rgba(35,49,61,.3);border-radius:14px;background:var(--paper);font-size:12.5px;color:var(--muted)}
+.bdg b{font-size:14px;color:var(--ink)}.bdg.on{border:2.5px solid var(--ink);background:#FBF3DF;box-shadow:2px 2px 0 var(--ink);color:var(--ink)}
+.medal{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font:800 15px/1 var(--fd);background:var(--soft);border:2.5px solid rgba(35,49,61,.35);color:var(--muted)}
+.bdg.on .medal{background:#E3B85C;border-color:var(--ink);color:var(--ink)}
+.bprog{width:80%;height:8px;border-radius:4px;background:var(--soft);overflow:hidden;border:1.5px solid rgba(35,49,61,.3)}.bprog i{display:block;height:100%;background:#E3B85C}.bnum{font-weight:800;font-size:11.5px}
+.bdg.sm{flex-direction:row;padding:6px 10px;border-style:solid;gap:8px}.bdg.sm .medal{width:34px;height:34px;font-size:12px}
+.diffpick{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}.diffpick button{border:2.5px solid var(--ink);background:var(--paper);border-radius:14px;padding:8px 6px;font-weight:800;display:flex;flex-direction:column;gap:2px;min-height:58px}.diffpick button span{font-size:11.5px;font-weight:700;color:var(--muted)}.diffpick button[aria-pressed="true"]{background:#23313D;color:#FBFCFB}.diffpick button[aria-pressed="true"] span{color:#DCE5EE}
 .gest{width:100%;display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--soft);border:2px dashed rgba(35,49,61,.3);border-radius:14px;padding:6px 8px 8px}
 .gest svg{width:170px;height:auto}.gest span{font-size:13px;font-weight:800}
 .gest .fg{transform-box:fill-box;transform-origin:center}
@@ -552,7 +564,7 @@ add({id:'ttt',name:'Tic-Tac-Toe',cat:'Board and table',modes:['cpu'],blurb:'Thre
   const hud=()=>a.hud(over?'':turn===1?(a.mode==='2p'?'X to play':'Your turn'):(a.mode==='2p'?'O to play':'Thinking…'));hud();
   function play(i){b[i]=turn;a.sfx.tick();const w=win(b);if(w){over=true;line=w.l;hud();setTimeout(()=>boardEnd(a,w.p),900);return;}turn=3-turn;hud();if(a.mode==='cpu'&&turn===2)wait=.5;}
   return{update(dt){if(wait>0){wait-=dt;if(wait<=0&&!over){let mv;const free=b.map((v,i)=>v?-1:i).filter(i=>i>=0);
-     if(Math.random()<.18)mv=free[Math.floor(Math.random()*free.length)];else{let bs=-99;for(const i of free){b[i]=2;const s=mm(b,1);b[i]=0;if(s>bs){bs=s;mv=i;}}}play(mv);}}},
+     if(Math.random()<(a.diff==='easy'?.45:.08))mv=free[Math.floor(Math.random()*free.length)];else{let bs=-99;for(const i of free){b[i]=2;const s=mm(b,1);b[i]=0;if(s>bs){bs=s;mv=i;}}}play(mv);}}},
    down(x,y){if(over||wait>0||(a.mode==='cpu'&&turn===2))return;const g=geo(),cx=Math.floor((x-g.x)/(g.s/3)),cy=Math.floor((y-g.y)/(g.s/3));if(cx<0||cy<0||cx>2||cy>2)return;const i=cy*3+cx;if(!b[i])play(i);},
    draw(c){const g=geo(),s=g.s/3;rr(c,g.x-8,g.y-8,g.s+16,g.s+16,20);c.fillStyle=C.paper;c.fill();stroke(c,3);
     c.strokeStyle=C.ink;c.lineWidth=5;c.lineCap='round';for(let i=1;i<3;i++){c.beginPath();c.moveTo(g.x+i*s,g.y+12);c.lineTo(g.x+i*s,g.y+g.s-12);c.moveTo(g.x+12,g.y+i*s);c.lineTo(g.x+g.s-12,g.y+i*s);c.stroke();}
@@ -572,7 +584,7 @@ add({id:'four',name:'Four in a Row',cat:'Board and table',modes:['cpu'],blurb:'D
   function play(col){const r=rowFor(g,col);if(r<0)return false;drop={col,r,y:-1,p:turn};return true;}
   function land(){const {col,r,p}=drop;g[r][col]=p;drop=null;a.sfx.tick();const l=check(g,p);if(l){over=true;winLine=l;hud();setTimeout(()=>boardEnd(a,p),1000);return;}
    if(g[0].every(v=>v)){over=true;hud();setTimeout(()=>boardEnd(a,0),800);return;}turn=3-turn;hud();if(a.mode==='cpu'&&turn===2)wait=.45;}
-  function cpu(){const cols=[...Array(W).keys()].filter(c2=>rowFor(g,c2)>=0);
+  function cpu(){const cols=[...Array(W).keys()].filter(c2=>rowFor(g,c2)>=0);if(a.diff==='easy'&&Math.random()<.4)return cols[Math.floor(Math.random()*cols.length)];
    for(const p of[2,1])for(const c2 of cols){const r=rowFor(g,c2);g[r][c2]=p;const w=check(g,p);g[r][c2]=0;if(w)return c2;}
    let best=cols[0],bs=-1e9;for(const c2 of cols){const r=rowFor(g,c2);let s=10-Math.abs(3-c2)*3+Math.random()*4;g[r][c2]=2;if(r>0){g[r-1][c2]=1;if(check(g,1))s-=50;g[r-1][c2]=0;}g[r][c2]=0;if(s>bs){bs=s;best=c2;}}return best;}
   return{update(dt){if(drop){drop.y+=dt*14;if(drop.y>=drop.r)land();}
@@ -598,7 +610,7 @@ add({id:'reversi',name:'Reversi',cat:'Board and table',modes:['cpu'],blurb:'Flip
   function next(){turn=3-turn;if(!moves(turn).length){if(!moves(3-turn).length){over=true;const b=count(1),w=count(2);setTimeout(()=>boardEnd(a,b>w?1:w>b?2:0),900);return;}a.toast((a.mode==='2p'?(turn===1?'Black':'White'):(turn===1?'You':'Computer'))+' must pass',C.ink);turn=3-turn;}
    if(a.mode==='cpu'&&turn===2)wait=.6;}
   function play(m){g[m.r][m.c]=turn;for(const [r,c2] of m.f)g[r][c2]=turn;a.sfx.tick();hud();next();}
-  return{update(dt){if(wait>0){wait-=dt;if(wait<=0&&!over){const ms=moves(2);let best=null,bs=-1e9;for(const m of ms){const corner=(m.r%7===0&&m.c%7===0)?12:0,xsq=((m.r===1||m.r===6)&&(m.c===1||m.c===6))?-8:0,edge=(m.r%7===0||m.c%7===0)?2:0;const s=m.f.length+corner+xsq+edge+Math.random()*1.5;if(s>bs){bs=s;best=m;}}if(best)play(best);}}},
+  return{update(dt){if(wait>0){wait-=dt;if(wait<=0&&!over){const ms=moves(2);let best=null,bs=-1e9;if(a.diff==='easy'&&Math.random()<.5&&ms.length){play(ms[Math.floor(Math.random()*ms.length)]);return;}for(const m of ms){const corner=(m.r%7===0&&m.c%7===0)?12:0,xsq=((m.r===1||m.r===6)&&(m.c===1||m.c===6))?-8:0,edge=(m.r%7===0||m.c%7===0)?2:0;const s=m.f.length+corner+xsq+edge+Math.random()*1.5;if(s>bs){bs=s;best=m;}}if(best)play(best);}}},
    down(x,y){if(over||wait>0||(a.mode==='cpu'&&turn===2))return;const q=geo(),c2=Math.floor((x-q.x)/q.cs),r=Math.floor((y-q.y)/q.cs);if(r<0||c2<0||r>=N||c2>=N)return;const f=flips(r,c2,turn);if(f.length)play({r,c:c2,f});else a.sfx.bad();},
    draw(c){const q=geo(),cs=q.cs;rr(c,q.x-6,q.y-6,cs*N+12,cs*N+12,14);c.fillStyle=C.felt;c.fill();stroke(c,3);
     c.strokeStyle='rgba(35,49,61,.35)';c.lineWidth=1.5;for(let i=1;i<N;i++){c.beginPath();c.moveTo(q.x+i*cs,q.y);c.lineTo(q.x+i*cs,q.y+N*cs);c.moveTo(q.x,q.y+i*cs);c.lineTo(q.x+N*cs,q.y+i*cs);c.stroke();}
@@ -899,6 +911,18 @@ function chSearch(st,depth,a,bt){ // returns score from white's view
  let best=null;for(const m of ms){const r=chSearch(chApply(st,m),depth-1,a,bt).s+Math.random()*8;
   if(st.t==='w'){if(!best||r>best.s)best={s:r,m};a=Math.max(a,r);}else{if(!best||r<best.s)best={s:r,m};bt=Math.min(bt,r);}if(bt<=a)break;}return best;}
 
+/* ---- General Sudoku (N = 4, 6 or 9; box br x bc) ---- */
+function sgOk(g,N,br,bc,r,c,v){for(let k=0;k<N;k++){if(g[r*N+k]===v||g[k*N+c]===v)return false;}const r0=r-r%br,c0=c-c%bc;for(let y=r0;y<r0+br;y++)for(let x=c0;x<c0+bc;x++)if(g[y*N+x]===v)return false;return true;}
+function sgCount(g,N,br,bc,limit){let best=-1,bn=99;for(let i=0;i<N*N;i++){if(g[i])continue;let n=0;for(let v=1;v<=N;v++)if(sgOk(g,N,br,bc,Math.floor(i/N),i%N,v))n++;if(n<bn){bn=n;best=i;if(n<=1)break;}}
+ if(best<0)return 1;if(bn===0)return 0;let cnt=0;const r=Math.floor(best/N),c=best%N;for(let v=1;v<=N;v++){if(sgOk(g,N,br,bc,r,c,v)){g[best]=v;cnt+=sgCount(g,N,br,bc,limit-cnt);g[best]=0;if(cnt>=limit)break;}}return cnt;}
+function sgGen(N,br,bc,givens){const base=[];for(let r=0;r<N;r++)for(let c=0;c<N;c++)base.push((bc*(r%br)+Math.floor(r/br)+c)%N+1);
+ const rows=[],cols=[];for(const b of sdShuffle([...Array(N/br).keys()]))for(const k of sdShuffle([...Array(br).keys()]))rows.push(b*br+k);
+ for(const s of sdShuffle([...Array(N/bc).keys()]))for(const k of sdShuffle([...Array(bc).keys()]))cols.push(s*bc+k);
+ const dig=sdShuffle([...Array(N).keys()].map(x=>x+1)),sol=[];for(let r=0;r<N;r++)for(let c=0;c<N;c++)sol.push(dig[base[rows[r]*N+cols[c]]-1]);
+ const puz=sol.slice();let left=N*N;for(const i of sdShuffle([...Array(N*N).keys()])){if(left<=givens)break;const v=puz[i];puz[i]=0;if(sgCount(puz.slice(),N,br,bc,2)!==1)puz[i]=v;else left--;}
+ return{sol,puz,N,br,bc};}
+const SD_LEVELS=[{N:4,br:2,bc:2,g:8,name:'4×4 · Starter',tdiv:4},{N:6,br:2,bc:3,g:18,name:'6×6 · Easy',tdiv:10},{N:6,br:2,bc:3,g:13,name:'6×6 · Medium',tdiv:12},{N:9,br:3,bc:3,g:36,name:'9×9 · Hard',tdiv:25},{N:9,br:3,bc:3,g:28,name:'9×9 · Expert',tdiv:30}];
+
 /* ================= NEW SKILL GAMES ================= */
 const SHC=[C.red,C.blue,C.green,C.gold,C.purple,'#E0996A','#5AAAB5','#CF86AA'];
 function drawShape(c,k,x,y,r,col){c.fillStyle=col||SHC[k%8];c.beginPath();k=k%8;
@@ -1141,27 +1165,30 @@ add({id:'towers',name:'Towers',sk:{plan:1},target:28,blurb:'Move the tower in th
       rr(c,x,y,w,dh-3,8);c.fillStyle=SHC[d];c.fill();stroke(c,2.5);});}
     txt(c,'Move the stack to the right peg',a.w/2,30,17,C.muted,800,FD);}};}});
 
-add({id:'sudoku',name:'Sudoku',sk:{plan:1},target:80,blurb:'Mini 6×6 number puzzle.',
- how:'Fill the grid so every row, column and 2×3 box has the numbers 1 to 6 once. Tap a square, then tap a number. Fewer mistakes and a faster time score more.',fmt:s=>s+' pts',
- create(a){const {sol,puz}=sdGen();const cur=puz.slice();let sel=-1,mist=0,t=0,done=false,bad=-1,bt=0;
-  const geo=()=>{const s=Math.min(a.w-24,a.h-150),cs=s/6;return{s,cs,x:(a.w-s)/2,y:10};};
-  const pad=()=>btnRow(a,[1,2,3,4,5,6],geo().y+geo().s+20,Math.min(64,a.h-geo().s-50));
-  return{update(dt){if(!done){t+=dt;a.hud(`${Math.floor(t/60)}:${String(Math.floor(t%60)).padStart(2,'0')} · ${mist} mistakes`);}bt=Math.max(0,bt-dt);},
-   down(x,y){if(done)return;const g=geo(),cx=Math.floor((x-g.x)/g.cs),cy=Math.floor((y-g.y)/g.cs);
-    if(cx>=0&&cy>=0&&cx<6&&cy<6){const i=cy*6+cx;if(!puz[i]){sel=i;a.sfx.tick();}return;}
+add({id:'sudoku',name:'Sudoku',sk:{plan:1},target:80,levels:SD_LEVELS.map(l=>l.name),blurb:'5 levels, from 4×4 to full 9×9.',
+ how:'Fill the grid so every row, column and box has each number once. Tap a square, then tap a number.',fmt:s=>`Level ${Math.floor(s/1000)} · ${s%1000} pts`,
+ lvlup:['Solve the puzzle with <b>2 mistakes or fewer</b> to unlock the next level.','Levels: 4×4 Starter → 6×6 Easy → 6×6 Medium → 9×9 Hard → 9×9 Expert.','Harder levels raise your Planning skill more. Fewer mistakes and a faster time score more points.'],
+ create(a){const lv=clamp(a.level||1,1,5),L=SD_LEVELS[lv-1],{sol,puz,N,br,bc}=sgGen(L.N,L.br,L.bc,L.g);const cur=puz.slice();let sel=-1,mist=0,t=0,done=false,bad=-1,bt=0;
+  const geo=()=>{const s=Math.min(a.w-20,a.h-(N>6?130:150)),cs=s/N;return{s,cs,x:(a.w-s)/2,y:10};};
+  const pad=()=>{const G=geo(),y=G.y+G.s+16,h=Math.min(60,a.h-y-10);return btnRow(a,[...Array(N).keys()].map(k=>k+1),y,h);};
+  const tm=()=>`${Math.floor(t/60)}:${String(Math.floor(t%60)).padStart(2,'0')}`;
+  return{update(dt){if(!done){t+=dt;a.hud(`Lv ${lv} · ${tm()} · ${mist} ${mist===1?'mistake':'mistakes'}`);}bt=Math.max(0,bt-dt);},
+   down(x,y){if(done)return;const G=geo(),cx=Math.floor((x-G.x)/G.cs),cy=Math.floor((y-G.y)/G.cs);
+    if(cx>=0&&cy>=0&&cx<N&&cy<N){const i=cy*N+cx;if(!puz[i]){sel=i;a.sfx.tick();}return;}
     const k=pad().findIndex(b=>inR(x,y,b));if(k<0||sel<0||cur[sel])return;
-    if(sol[sel]===k+1){cur[sel]=k+1;a.sfx.tick();if(cur.every((v,i)=>v===sol[i])){done=true;const sc=Math.max(10,100-mist*12-Math.floor(t/12));a.sfx.good();a.end({score:sc,text:`Solved in ${Math.floor(t/60)}:${String(Math.floor(t%60)).padStart(2,'0')} with ${mist} ${mist===1?'mistake':'mistakes'}.`,xp:Math.round(sc/8)});}}
+    if(sol[sel]===k+1){cur[sel]=k+1;a.sfx.tick();if(cur.every((v,i)=>v===sol[i])){done=true;const pts=Math.max(10,100-mist*12-Math.floor(t/L.tdiv)),unlock=mist<=2&&lv<5;a.sfx.good();
+      a.end({score:lv*1000+pts,perf:clamp(pts/100*(.5+lv*.1),0,1),unlock:mist<=2?lv+1:0,
+       title:unlock?`Level ${lv+1} unlocked!`:lv===5&&mist<=2?'Expert solved!':'Solved!',
+       text:`Level ${lv} (${L.name}) solved in ${tm()} with ${mist} ${mist===1?'mistake':'mistakes'}: ${pts} points.${mist>2?' Solve it with 2 mistakes or fewer to unlock the next level.':''}`,xp:Math.round(pts/10*lv/2)+2});}}
     else{mist++;bad=sel;bt=.5;a.sfx.bad();}},
-   draw(c){const g=geo();rr(c,g.x-3,g.y-3,g.s+6,g.s+6,8);c.fillStyle=C.paper;c.fill();stroke(c,3);
-    const sv=sel>=0?cur[sel]:0;
-    for(let i=0;i<36;i++){const x=g.x+(i%6)*g.cs,y=g.y+Math.floor(i/6)*g.cs,same=sel>=0&&(i%6===sel%6||Math.floor(i/6)===Math.floor(sel/6));
-     if(i===sel){c.fillStyle='#CFE3E5';c.fillRect(x,y,g.cs,g.cs);}else if(same){c.fillStyle=C.soft;c.fillRect(x,y,g.cs,g.cs);}
-     if(i===bad&&bt>0){c.fillStyle='#F5DEDA';c.fillRect(x,y,g.cs,g.cs);}
-     if(cur[i])txt(c,String(cur[i]),x+g.cs/2,y+g.cs/2,g.cs*.5,puz[i]?C.ink:C.blue,puz[i]?800:700,FD);}
-    c.strokeStyle=C.line2;c.lineWidth=1;for(let k=1;k<6;k++){c.beginPath();c.moveTo(g.x+k*g.cs,g.y);c.lineTo(g.x+k*g.cs,g.y+g.s);c.moveTo(g.x,g.y+k*g.cs);c.lineTo(g.x+g.s,g.y+k*g.cs);c.stroke();}
-    c.strokeStyle=C.ink;c.lineWidth=3;c.beginPath();c.moveTo(g.x+3*g.cs,g.y);c.lineTo(g.x+3*g.cs,g.y+g.s);for(const k of[2,4]){c.moveTo(g.x,g.y+k*g.cs);c.lineTo(g.x+g.s,g.y+k*g.cs);}c.stroke();
+   draw(c){const G=geo();rr(c,G.x-3,G.y-3,G.s+6,G.s+6,8);c.fillStyle=C.paper;c.fill();stroke(c,3);
+    for(let i=0;i<N*N;i++){const x=G.x+(i%N)*G.cs,y=G.y+Math.floor(i/N)*G.cs,same=sel>=0&&(i%N===sel%N||Math.floor(i/N)===Math.floor(sel/N));
+     if(i===sel){c.fillStyle='#CFE3E5';c.fillRect(x,y,G.cs,G.cs);}else if(same){c.fillStyle=C.soft;c.fillRect(x,y,G.cs,G.cs);}
+     if(i===bad&&bt>0){c.fillStyle='#F5DEDA';c.fillRect(x,y,G.cs,G.cs);}
+     if(cur[i])txt(c,String(cur[i]),x+G.cs/2,y+G.cs/2,G.cs*.52,puz[i]?C.ink:C.blue,puz[i]?800:700,FD);}
+    c.strokeStyle=C.line2;c.lineWidth=1;for(let k=1;k<N;k++){c.beginPath();c.moveTo(G.x+k*G.cs,G.y);c.lineTo(G.x+k*G.cs,G.y+G.s);c.moveTo(G.x,G.y+k*G.cs);c.lineTo(G.x+G.s,G.y+k*G.cs);c.stroke();}
+    c.strokeStyle=C.ink;c.lineWidth=3;c.beginPath();for(let k=bc;k<N;k+=bc){c.moveTo(G.x+k*G.cs,G.y);c.lineTo(G.x+k*G.cs,G.y+G.s);}for(let k=br;k<N;k+=br){c.moveTo(G.x,G.y+k*G.cs);c.lineTo(G.x+G.s,G.y+k*G.cs);}c.stroke();
     pad().forEach((b,i)=>drawBtn(c,b,C.paper,String(i+1),C.blue));}};}});
-
 add({id:'slide',name:'Slide',sk:{plan:.7,spatial:.3},target:80,blurb:'Put the numbers back in order.',
  how:'Tap a tile next to the gap to slide it. Get the tiles in order from 1 to 8, with the gap in the bottom-right corner. Fewer moves score more.',fmt:s=>s+' pts',
  create(a){let b=[1,2,3,4,5,6,7,8,0],moves=0,done=false;let e=8;for(let k=0;k<120;k++){const r=Math.floor(e/3),c=e%3,nb=[[r-1,c],[r+1,c],[r,c-1],[r,c+1]].filter(([y,x])=>y>=0&&y<3&&x>=0&&x<3).map(([y,x])=>y*3+x);const j=nb[Math.floor(Math.random()*nb.length)];b[e]=b[j];b[j]=0;e=j;}
@@ -1214,7 +1241,7 @@ add({id:'checkers',name:'Checkers',sk:{plan:1},modes:['cpu'],blurb:'Jump and cap
   const count=p=>b.filter(v=>ckOwner(v)===p).length;const hud=()=>a.hud(over?'':turn===1?`Your move · ${count(1)} vs ${count(2)}`:'Thinking…');hud();
   const finish=w=>{over=true;hud();setTimeout(()=>boardEnd(a,w),900);};
   const after=()=>{turn=3-turn;const ms=ckMoves(b,turn);if(!ms.length)return finish(3-turn);if(!count(1))return finish(2);if(!count(2))return finish(1);if(turn===2)wait=.5;hud();};
-  return{update(dt){if(wait>0){wait-=dt;if(wait<=0&&!over){const r=ckSearch(b,2,4,-1e9,1e9);if(r&&r.m){last=r.m;b=ckApply(b,r.m);a.sfx.tick();after();}}}},
+  return{update(dt){if(wait>0){wait-=dt;if(wait<=0&&!over){const ms0=ckMoves(b,2),r=a.diff==='easy'&&Math.random()<.35?{m:ms0[Math.floor(Math.random()*ms0.length)]}:ckSearch(b,2,a.diff==='easy'?2:4,-1e9,1e9);if(r&&r.m){last=r.m;b=ckApply(b,r.m);a.sfx.tick();after();}}}},
    down(x,y){if(over||turn!==1||wait>0)return;const g=geo(),i=cellAt(g,8,x,y);if(i<0)return;const ms=ckMoves(b,1);
     if(sel>=0){const m=ms.find(m=>m.from===sel&&m.path[m.path.length-1]===i);if(m){b=ckApply(b,m);sel=-1;opts=[];a.sfx.tick();after();return;}}
     if(ckOwner(b[i])===1){const mine=ms.filter(m=>m.from===i);if(mine.length){sel=i;opts=mine.map(m=>m.path[m.path.length-1]);}else{sel=-1;opts=[];if(ms[0]&&ms[0].caps.length)a.toast('You must jump!',C.red);}}},
@@ -1232,7 +1259,7 @@ add({id:'chess',name:'Chess',sk:{plan:1},modes:['cpu'],blurb:'The classic strate
   const hud=()=>a.hud(over?'':st.t==='w'?(chInCheck(st)?'Check! Your move':'Your move'):'Thinking…');hud();
   const after=()=>{plies++;const ms=chLegal(st);if(!ms.length){over=true;hud();setTimeout(()=>boardEnd(a,chInCheck(st)?(st.t==='w'?2:1):0),1000);a.toast(chInCheck(st)?'Checkmate!':'Stalemate',C.ink);return;}
    if(st.half>=100||plies>=240){over=true;hud();setTimeout(()=>boardEnd(a,0),800);a.toast('Draw',C.ink);return;}if(chInCheck(st))a.toast('Check!',C.red);if(st.t==='b')wait=.35;hud();};
-  return{update(dt){if(wait>0){wait-=dt;if(wait<=0&&!over){const r=chSearch(st,3,-1e9,1e9);if(r&&r.m){last=r.m;st=chApply(st,r.m);a.sfx.tick();after();}}}},
+  return{update(dt){if(wait>0){wait-=dt;if(wait<=0&&!over){const lm=chLegal(st),r=a.diff==='easy'&&Math.random()<.35?{m:lm[Math.floor(Math.random()*lm.length)]}:chSearch(st,a.diff==='easy'?1:3,-1e9,1e9);if(r&&r.m){last=r.m;st=chApply(st,r.m);a.sfx.tick();after();}}}},
    down(x,y){if(over||st.t!=='w'||wait>0)return;const g=geo(),i=cellAt(g,8,x,y);if(i<0)return;
     if(sel>=0){const m=chLegal(st).find(m=>m.from===sel&&m.to===i);if(m){last=m;st=chApply(st,m);sel=-1;opts=[];a.sfx.tick();after();return;}}
     if(chSide(st.b[i])==='w'){sel=i;opts=chLegal(st).filter(m=>m.from===i).map(m=>m.to);if(!opts.length)a.sfx.bad();}else{sel=-1;opts=[];}},
@@ -1390,6 +1417,51 @@ function gestureSVG(k){const F='<circle class="fg" r="9" fill="#23313D" fill-opa
   repeat:`${tile(25,30,'r1')}${tile(65,30,'r2')}${tile(105,30,'r3')}<text x="40" y="50" text-anchor="middle" font-size="13" font-weight="800" fill="#23313D" font-family="Nunito,sans-serif">1</text><text x="80" y="50" text-anchor="middle" font-size="13" font-weight="800" fill="#23313D" font-family="Nunito,sans-serif">2</text><text x="120" y="50" text-anchor="middle" font-size="13" font-weight="800" fill="#23313D" font-family="Nunito,sans-serif">3</text><text class="rw" x="80" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#5E6B75" font-family="Nunito,sans-serif">WATCH</text><text class="ry" x="80" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#3A7F5D" font-family="Nunito,sans-serif">YOUR TURN</text><g class="g-rep">${F}</g>`,
   pick2:`${tile(30,30,'pa')}<circle cx="45" cy="45" r="8" fill="#E07A6B" stroke="#23313D" stroke-width="2"/>${tile(100,30,'pb')}<path class="arr" d="M64 45 H94" stroke="#23313D" stroke-width="2.5" stroke-dasharray="4 4" marker-end="url(#ah)"/><g class="g-p2">${F}</g>`};
  return`<div class="gest"><svg viewBox="0 0 160 90" role="img" aria-label="${GLBL[k]}"><defs><marker id="ah" markerWidth="6" markerHeight="6" refX="4" refY="3" orient="auto"><path d="M0 0L6 3L0 6z" fill="#23313D"/></marker></defs>${body[k]||body.tap}</svg><span>${GLBL[k]||GLBL.tap}</span></div>`;}
+
+/* ---------- how to level up (shown on every start screen) ---------- */
+const ROUNDS5=new Set(['sequence','soundmem','path','recall','vanish','chaos','three']);
+const LVLUP={lanes:'Dodge blocks as long as you can. It speeds up the longer you last.',snake:'Every apple makes you longer and faster.',glide:'Each gap you pass counts. Pipes keep coming.',skyhop:'Climb as high as you can. Moving platforms appear higher up.',fliprun:'Run as far as you can. It gets faster.',hurdle:'Clear as many blocks as you can. It gets faster.',stack:'Stack as high as you can. The block speeds up each layer.',bullseye:'The green zone shrinks every hit. Three misses ends it.',beat:'Rings come faster as you score. Three misses ends it.',
+ golf:'Play all 5 holes. More walls appear on later holes.',lander:'Each landing makes the pad smaller and the fuel lower.',bricks:'Clear a wall to get a faster, tougher one.',estimate:'10 rounds. The number of dots grows each round.',tally:'10 rounds. More shapes and faster movement each round.',sums:'10 questions. Bigger numbers and take-aways come later.',
+ whack:'Bop as many as you can in 30 seconds. Moles hide faster over time.',pairs:'Find all 8 pairs in as few moves as you can.',blink:'30 shapes. After 10 it switches from 1 back to 2 back.',spot:'The grid grows and the difference shrinks every 3 finds. 40 seconds.',opposite:'Score as many as you can in 40 seconds. Wrong taps cost a point.',mirror:'Catch as many stars as you can in 40 seconds.',invert:'Survive as long as you can. Blocks fall faster.',
+ rules:'The rule switches every 3 to 6 cards. 45 seconds.',sort:'3 rounds of 12 with a new rule each round. It gets faster.',blocks:'Keep fitting pieces. Clearing 2 lines at once scores extra.',cannons:'10 shots. Walls appear from shot 3 and wind from shot 5.',
+ towers:'Finish 3 disks to move up to 4, then 5. Fewest moves scores the most.',slide:'Solve it in as few moves as you can.',jam:'5 puzzles, each one harder. Fewest moves scores the most.',maze:'Every maze you escape leads to a bigger one. 90 seconds.',
+ ttt:'Win against the computer to raise your skill.',four:'Win against the computer to raise your skill.',reversi:'Win against the computer to raise your skill.',checkers:'Win against the computer to raise your skill.',chess:'Win against the computer to raise your skill.',hockey:'First to 5 goals wins.',pong:'First to 5 points wins.',quickdraw:'First to 3 rounds wins.'};
+function levelInfo(g){const p=P(),sk=Object.keys(g.sk||{}),lines=[];
+ if(g.lvlup)lines.push(...g.lvlup);
+ else{if(ROUNDS5.has(g.id))lines.push('Clear <b>5 rounds</b> to finish a level. Each level is harder. You have 3 lives, and a break comes after every level.');else if(LVLUP[g.id])lines.push(LVLUP[g.id]);
+  if(g.modes)lines.push('A win counts most, a draw counts some. Your skill level rises as you win more.');else if(g.target)lines.push(`Reach <b>${g.fmt(g.target)}</b> to earn a top rating in ${sk.map(k=>SK(k).id).join(' and ')}.`);}
+ if(p){const scs=skillScores(p);lines.push(`<span class="lvnow">${sk.map(k=>`<span>${SK(k).id}: Lv ${skLv(scs[k].v)||'–'} ${pips(skMax(p,k),skLv(scs[k].v),SK(k).col)}</span>`).join('')}</span>`);}
+ if(!g.levels)lines.push('<b>Easy</b> is slower with more time to think. <b>Hard</b> is faster and earns 1.5× XP, and a top rating on Hard earns the <b>Hard mode hero</b> badge.');
+ lines.push('Your skill level (1–10) goes up as your results improve. You’ll see <b>“Level cleared!”</b> when you reach a new one, and badges as you make progress.');
+ return`<div class="lvinfo"><span class="lbl">How to level up</span><ul>${lines.map(l=>`<li>${l}</li>`).join('')}</ul></div>`;}
+
+/* ---------- progress & badges ---------- */
+const BADGES=[
+ {id:'first',n:'First game',d:'Finish your first game',ic:'★',t:(p)=>[totPlays(p),1]},
+ {id:'g10',n:'Getting going',d:'Finish 10 games',ic:'10',t:(p)=>[totPlays(p),10]},
+ {id:'g50',n:'Dedicated',d:'Finish 50 games',ic:'50',t:(p)=>[totPlays(p),50]},
+ {id:'g100',n:'Game champion',d:'Finish 100 games',ic:'100',t:(p)=>[totPlays(p),100]},
+ {id:'s3',n:'On a roll',d:'Play 3 days in a row',ic:'3d',t:(p)=>[p.streak.max||0,3]},
+ {id:'s7',n:'Week streak',d:'Play 7 days in a row',ic:'7d',t:(p)=>[p.streak.max||0,7]},
+ {id:'ex10',n:'Explorer',d:'Try 10 different games',ic:'◎',t:(p)=>[Object.keys(p.plays).length,10]},
+ {id:'exall',n:'Collector',d:'Try all 46 games',ic:'46',t:(p)=>[Object.keys(p.plays).length,GAMES.length]},
+ {id:'all8',n:'All-rounder',d:'Get a rating in all 8 skills',ic:'8',t:(p)=>{const s=skillScores(p);return[SKILLS.filter(k=>s[k.k].v!=null).length,8];}},
+ {id:'lv5',n:'Rising star',d:'Reach level 5 in any skill',ic:'5',t:(p)=>[Math.max(...SKILLS.map(k=>skMax(p,k.k))),5]},
+ {id:'lv8',n:'Skill master',d:'Reach level 8 in any skill',ic:'8★',t:(p)=>[Math.max(...SKILLS.map(k=>skMax(p,k.k))),8]},
+ {id:'lv10',n:'Top of the class',d:'Reach level 10 in any skill',ic:'10★',t:(p)=>[Math.max(...SKILLS.map(k=>skMax(p,k.k))),10]},
+ {id:'bal',n:'Balanced mind',d:'Reach level 4 in all 8 skills',ic:'⚖',t:(p)=>[SKILLS.filter(k=>skMax(p,k.k)>=4).length,8]},
+ {id:'hard',n:'Hard mode hero',d:'Get a top rating in any game on Hard',ic:'H',t:(p)=>[p.hardTop||0,1]},
+ {id:'cpu',n:'Beat the computer',d:'Win any game against the computer',ic:'✓',t:(p)=>[wins(p),1]},
+ {id:'mate',n:'Checkmate',d:'Win a game of Chess',ic:'♞',t:(p)=>[(p.rec&&p.rec.chess&&p.rec.chess.w)||0,1]},
+ {id:'sdx',n:'Sudoku expert',d:'Unlock the 9×9 Expert Sudoku',ic:'9×9',t:(p)=>[(p.unlock&&p.unlock.sudoku)||1,5]},
+ {id:'rest',n:'Healthy habit',d:'Take a 20-second eye break',ic:'☾',t:(p)=>[p.rests||0,1]}];
+const totPlays=p=>Object.values(p.plays).reduce((a,b)=>a+b,0);
+function badgeCheck(p){p.badges=p.badges||{};const got=[];for(const b of BADGES){if(p.badges[b.id])continue;const [v,n]=b.t(p);if(v>=n){p.badges[b.id]=today();got.push(b);track(`badge/${b.id}`,`Badge: ${b.n}`);}}return got;}
+function badgeHTML(b,p,small){const on=p&&p.badges&&p.badges[b.id],[v,n]=p?b.t(p):[0,1];
+ return`<div class="bdg${on?' on':''}${small?' sm':''}" title="${esc(b.d)}"><span class="medal">${b.ic}</span><b>${b.n}</b>${small?'':`<span>${on?'Earned '+on:esc(b.d)}</span>${on?'':`<span class="bprog"><i style="width:${Math.min(100,v/n*100)}%"></i></span><span class="bnum">${Math.min(v,n)}/${n}</span>`}`}</div>`;}
+function progressBox(p){const tried=Object.keys(p?p.plays:{}).length,cl=p?SKILLS.reduce((a,k)=>a+skMax(p,k.k),0):0,bd=p&&p.badges?Object.keys(p.badges).length:0;
+ const row=(l,v,n,col)=>`<div class="hrow"><span>${l}</span><span class="tr"><span class="fl" style="width:${v/n*100}%;background:${col}"></span></span><span class="v">${v}/${n}</span></div>`;
+ return`<div class="box split"><span class="lbl">Your progress</span>${row('Games tried',tried,GAMES.length,'#5B83C4')}${row('Levels cleared',cl,80,'#4FA37A')}${row('Badges',bd,BADGES.length,'#E3B85C')}</div>`;}
 /* ================= VIEWS ================= */
 let tab='play',query='';const cockpitOn=()=>location.hash==='#cockpit'||S.cockpit===true;
 function setTab(t){if(t==='cockpit'&&!cockpitOn())t='play';tab=t;
@@ -1416,6 +1488,7 @@ function renderPlay(){
    <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
    <div class="small">${L.to?`${xp} of ${L.to} XP to ${L.next}`:`${xp} XP. Top level!`}</div>
   </div>
+  ${p?progressBox(p):''}
   <button class="box daily" data-game="${d.id}">${icon(d.id)}<span class="txt"><span class="lbl">Game of the day · 2× XP</span><br><span class="nm">${d.name}</span><br><span class="small">${d.blurb}</span></span><span class="go">Play</span></button>
   <input class="search" id="q" type="search" placeholder="Search ${GAMES.length} games" value="${esc(query)}" aria-label="Search games">
   <div class="vstack" id="secs">${secs||'<p class="note">No games match that search.</p>'}</div>
@@ -1514,6 +1587,8 @@ function renderScore(){
   <div class="box prof">${avatar(p,true)}<div style="flex:1;min-width:0"><div class="nick">${esc(p.nick)}</div><div class="small">Level ${L.n} · ${L.name} · Rank #${rk} of ${players.length} on this device</div></div></div>
   <div class="tiles"><div class="tile"><b>${p.xp}</b><span>XP</span></div><div class="tile"><b>${streakShown(p)}</b><span>day streak</span></div><div class="tile"><b>${plays}</b><span>games played</span></div></div>
   <div class="tiles"><div class="tile"><b>${mins}</b><span>minutes played</span></div><div class="tile"><b>${wins(p)}</b><span>wins vs computer</span></div><div class="tile"><b>${p.streak.max||streakShown(p)}</b><span>best streak</span></div></div>
+  ${progressBox(p)}
+  <div class="box"><div class="lvl-top"><span class="lbl">Badges</span><span class="pill">${Object.keys(p.badges||{}).length}/${BADGES.length} earned</span></div><div class="bgrid" style="margin-top:10px">${[...BADGES].sort((a,b)=>!!(p.badges||{})[b.id]-!!(p.badges||{})[a.id]).map(b=>badgeHTML(b,p)).join('')}</div></div>
   <button class="btn alt full" id="shareSc">Share my scorecard with the creator</button>
   ${skillBox(p)}
   <div class="box split"><span class="lbl">XP by skill</span>${hrows(byCat)}</div>
@@ -1601,46 +1676,51 @@ const stage=$('#stage'),cv=$('#cv'),ctx=cv.getContext('2d'),panel=$('#panel'),hu
 let W=0,H=0,dpr=1,def=null,inst=null,done=false,toasts=[],raf=0,last=0,playMs=0,runMs=0,nudged=false,mode=null;
 function resize(){const r=cv.getBoundingClientRect();if(!r.width||!r.height)return;dpr=Math.min(3,window.devicePixelRatio||1);W=r.width;H=r.height;cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);}
 new ResizeObserver(resize).observe(cv);
-const api={get w(){return W},get h(){return H},get mode(){return mode},hud:t=>{hudEl.textContent=t},sfx,checkpoint:(title,msg)=>checkpoint(title,msg),toast:(t,col)=>{toasts=[{t,col:col||C.ink,age:0}];},end:res=>{if(done)return;done=true;const tok=runTok;setTimeout(()=>{if(tok===runTok)result(res);},750);}};let runTok=0;
+const api={get w(){return W},get h(){return H},get mode(){return mode},get level(){return pickLv},get diff(){return def&&def.levels?'hard':pickDiff},hud:t=>{hudEl.textContent=t},sfx,checkpoint:(title,msg)=>checkpoint(title,msg),toast:(t,col)=>{toasts=[{t,col:col||C.ink,age:0}];},end:res=>{if(done)return;done=true;const tok=runTok;setTimeout(()=>{if(tok===runTok)result(res);},750);}};let runTok=0;
 
 let wake=null,paused=false,cd=0,cdShort=false;const SHORTCD=new Set(['sudoku','slide','towers','jam','ttt','four','reversi','checkers','chess']);
 function checkpoint(title,msg){if(!inst||done)return;paused=true;sfx.good();panel.hidden=false;
  panel.innerHTML=`<div class="pcard"><span class="lbl">${def.name}</span><h3>${esc(title)}</h3><p>${esc(msg)}</p><div class="btns"><button class="btn pri" id="cpGo">Continue</button><button class="btn" id="cpStop">Finish here and save</button></div></div>`;
- $('#cpGo').onclick=()=>{paused=false;panel.hidden=true;last=performance.now();cdShort=false;cd=1.2;};
+ $('#cpGo').onclick=()=>{paused=false;panel.hidden=true;last=performance.now();cd=2.6;};
  $('#cpStop').onclick=()=>{paused=false;panel.hidden=true;inst.finish&&inst.finish();};}
 function pauseGame(){if(!inst||done||paused)return;paused=true;panel.hidden=false;panel.innerHTML=`<div class="pcard"><h3>Paused</h3><p>Take your time. Your game is waiting.</p>${gestureSVG(GEST[def.id])}<div class="btns"><button class="btn pri" id="resB">Resume</button><div class="btns row" style="margin:0"><button class="btn" id="rstB">Restart</button><button class="btn" id="quitB">All games</button></div></div></div>`;
- $('#resB').onclick=()=>{paused=false;panel.hidden=true;last=performance.now();cd=Math.max(cd,cdShort?0:1.2);};$('#rstB').onclick=()=>{paused=false;begin();};$('#quitB').onclick=closeGame;}
+ $('#resB').onclick=()=>{paused=false;panel.hidden=true;last=performance.now();cd=Math.max(cd,1.6);};$('#rstB').onclick=()=>{paused=false;begin();};$('#quitB').onclick=closeGame;}
 
 async function keepAwake(on){try{if(on&&navigator.wakeLock&&!wake){wake=await navigator.wakeLock.request('screen');}else if(!on&&wake){await wake.release();wake=null;}}catch(e){wake=null;}}
 function openGame(id){def=G(id);stage.hidden=false;$('#stTitle').textContent=def.name;hudEl.textContent='';inst=null;done=false;toasts=[];requestAnimationFrame(resize);intro();if(!raf){last=performance.now();raf=requestAnimationFrame(frame);}keepAwake(true);}
 function closeGame(){runTok++;flushFb();stage.hidden=true;cancelAnimationFrame(raf);raf=0;inst=null;panel.hidden=true;keepAwake(false);render();}
 const MODE_LABEL={cpu:'Start'};
-function intro(){panel.hidden=false;$('#pauseB').hidden=true;const daily=def.id===dailyId();
+let pickLv=1,pickDiff='easy';
+function intro(){panel.hidden=false;$('#pauseB').hidden=true;const daily=def.id===dailyId();const p=P(),un=def.levels?Math.max(1,(p&&p.unlock&&p.unlock[def.id])||1):0;pickLv=un||1;
+ pickDiff=(p&&p.diff)||'easy';const dfp=def.levels?'':`<span class="lbl">Choose how hard</span><div class="diffpick"><button data-diff="easy" aria-pressed="${pickDiff==='easy'}">Easy<span>Slower, more time. Great for beginners and younger players</span></button><button data-diff="hard" aria-pressed="${pickDiff==='hard'}">Hard<span>Faster and tougher. 1.5× XP</span></button></div>`;
+ const lvp=def.levels?`<span class="lbl">Choose a level (${un} of ${def.levels.length} unlocked)</span><div class="lvpick">${def.levels.map((n,i)=>`<button data-lv="${i+1}" aria-pressed="${i+1===pickLv}" ${i+1>un?'disabled':''}>${i+1}. ${n}${i+1>un?' (locked)':''}</button>`).join('')}</div>`:'';
  const btns=def.modes?def.modes.map((m,i)=>`<button class="btn ${i?'alt':'pri'}" data-mode="${m}">${MODE_LABEL[m]}</button>`).join(''):`<button class="btn pri" data-mode="solo">Start</button>`;
- panel.innerHTML=`<div class="pcard">${icon(def.id)}<h3>${def.name}</h3><span class="lbl">Trains: ${Object.keys(def.sk||{}).map(k=>SK(k).id).join(' · ')}</span>${gestureSVG(GEST[def.id])}<p>${def.how}</p>${daily?'<p style="color:var(--red);font-weight:800">Game of the day: 2× XP</p>':''}<div class="btns">${btns}</div></div>`;
- panel.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>begin(b.dataset.mode));}
-function begin(m){runTok++;paused=false;cdShort=SHORTCD.has(def.id);cd=cdShort?1:3.2;$('#pauseB').hidden=false;flushFb();if(m)mode=m;track('start/'+def.id,'Start '+def.name);resize();panel.hidden=true;toasts=[];done=false;runMs=0;S.starts[def.id]=(S.starts[def.id]||0)+1;if(def.modes){S.modes[mode]=(S.modes[mode]||0)+1;}save();hudEl.textContent='';inst=def.create(api);sfx.tick();}
+ panel.innerHTML=`<div class="pcard">${icon(def.id)}<h3>${def.name}</h3><span class="lbl">Trains: ${Object.keys(def.sk||{}).map(k=>SK(k).id).join(' · ')}</span>${gestureSVG(GEST[def.id])}<p>${def.how}</p>${levelInfo(def)}${dfp}${lvp}${daily?'<p style="color:var(--red);font-weight:800">Game of the day: 2× XP</p>':''}<div class="btns">${btns}</div></div>`;
+ panel.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>begin(b.dataset.mode));panel.querySelectorAll('[data-diff]').forEach(b=>b.onclick=()=>{pickDiff=b.dataset.diff;const p=P();if(p){p.diff=pickDiff;save();}panel.querySelectorAll('[data-diff]').forEach(x=>x.setAttribute('aria-pressed',x===b));});panel.querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>{pickLv=+b.dataset.lv;panel.querySelectorAll('[data-lv]').forEach(x=>x.setAttribute('aria-pressed',x===b));});}
+function begin(m){runTok++;paused=false;cdShort=false;cd=2.6;$('#pauseB').hidden=false;flushFb();if(m)mode=m;track('start/'+def.id+(def.levels?'':'/'+pickDiff),'Start '+def.name);resize();panel.hidden=true;toasts=[];done=false;runMs=0;S.starts[def.id]=(S.starts[def.id]||0)+1;if(def.modes){S.modes[mode]=(S.modes[mode]||0)+1;}save();hudEl.textContent='';inst=def.create(api);sfx.tick();}
 function result(res){$('#pauseB').hidden=true;
  const p=P();let xp=Math.max(0,Math.round(res.xp||0));const daily=def.id===dailyId();if(daily)xp*=2;
  let bestNote='';
  if(!def.modes){const prev=p.best[def.id],isBest=prev==null||res.score>prev;if(isBest)p.best[def.id]=res.score;bestNote=isBest?'New personal best!':'Best: '+def.fmt(p.best[def.id]);}
  else if(res.outcome){p.rec=p.rec||{};const r=p.rec[def.id]||(p.rec[def.id]={w:0,l:0,d:0});r[res.outcome==='win'?'w':res.outcome==='loss'?'l':'d']++;bestNote=`Record vs computer: ${r.w}W ${r.l}L ${r.d}D`;}
+ let unlockNote='';if(res.unlock&&def.levels){p.unlock=p.unlock||{};const was=p.unlock[def.id]||1,nu=Math.min(def.levels.length,Math.max(was,res.unlock));if(nu>was){p.unlock[def.id]=nu;unlockNote=`Level ${nu} unlocked: ${def.levels[nu-1]}`;track(`unlock/${def.id}/${nu}`,`${def.name} level ${nu} unlocked`);}if(nu>=pickLv+1&&nu<=def.levels.length)pickLv=Math.min(nu,pickLv+1);}
  p.xp+=xp;p.plays[def.id]=(p.plays[def.id]||0)+1;streakTouch(p);
- const prevSk=skillScores(p);const prevMax=Object.fromEntries(SKILLS.map(k=>[k.k,skMax(p,k.k)]));const perf=res.perf!=null?res.perf:def.modes?(res.outcome==='win'?1:res.outcome==='draw'?.55:.25):clamp((res.score||0)/(def.target||10),0,1);p.perf=p.perf||{};(p.perf[def.id]=p.perf[def.id]||[]).push(Math.round(perf*100)/100);if(p.perf[def.id].length>10)p.perf[def.id].shift();
+ const isHard=pickDiff==='hard'&&!def.levels;if(isHard)xp=Math.round(xp*1.5);
+ const prevSk=skillScores(p);const prevMax=Object.fromEntries(SKILLS.map(k=>[k.k,skMax(p,k.k)]));const perf=res.perf!=null?res.perf:def.modes?(res.outcome==='win'?1:res.outcome==='draw'?.55:.25):clamp((res.score||0)/(def.target||10),0,1);const perfAdj=def.levels||SHORTCD.has(def.id)?perf:perf*(isHard?1:.85);if(isHard&&perf>=.8)p.hardTop=(p.hardTop||0)+1;p.perf=p.perf||{};(p.perf[def.id]=p.perf[def.id]||[]).push(Math.round(perfAdj*100)/100);if(p.perf[def.id].length>10)p.perf[def.id].shift();
  const scs=skillScores(p);p.skh=p.skh||{};for(const k of Object.keys(scs)){const a0=skLv(prevSk[k].v),a1=skLv(scs[k].v);if(a1>a0)track(`skill/${k}/lv${a1}`,`${SK(k).id} reached level ${a1}`);}p.skh[today()]=Object.fromEntries(Object.entries(scs).map(([k,o])=>[k,o.v]));p.skmax=p.skmax||{};const cleared=[];for(const k of Object.keys(scs)){const lv=skLv(scs[k].v);if(lv>prevMax[k]&&(def.sk||{})[k]&&prevMax[k]>0)cleared.push([k,lv]);p.skmax[k]=Math.max(lv,prevMax[k]);}
  const skLine=Object.keys(def.sk||{}).map(k=>`<span style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px">${SK(k).id} Lv ${skLv(scs[k].v)} ${pips(skMax(p,k),skLv(scs[k].v),SK(k).col)}</span>`).join('');const clearedLine=cleared.map(([k,lv])=>`Level ${lv} cleared in ${SK(k).id}!`).join(' ');if(cleared.length)setTimeout(()=>sfx.good(),400);
  p.log.push({t:Date.now(),g:def.id,s:res.score??null,o:res.outcome||null,x:xp,ms:Math.round(runMs)});if(p.log.length>800)p.log=p.log.slice(-800);
- const d=dayRec(today());d.plays++;d.xp+=xp;save();sfx.end();track('finish/'+def.id,'Finish '+def.name);
+ const newB=badgeCheck(p);const d=dayRec(today());d.plays++;d.xp+=xp;save();sfx.end();track('finish/'+def.id,'Finish '+def.name);
  const showNudge=!nudged&&playMs>20*60*1000;if(showNudge){nudged=true;S.rest.shown++;save();}
  panel.hidden=false;
  const again=def.modes?`<button class="btn pri" id="againB">Play again</button>`:`<button class="btn pri" id="againB">Again</button>`;
  panel.innerHTML=`<div class="pcard"><span class="lbl">${esc(p.nick)} · ${def.name}</span>${res.title?`<h3>${esc(res.title)}</h3>`:''}<div class="big" style="color:${res.outcome==='loss'?C.muted:C.red}">+${xp} XP</div>${daily?'<span class="lbl" style="color:var(--red)">Doubled: game of the day</span>':''}
-  <p>${res.text}</p>${bestNote?`<p class="small">${bestNote}</p>`:''}${clearedLine?`<p style="font-weight:800;color:#3A7F5D;margin:0">${clearedLine}</p>`:''}<div class="small" style="font-weight:800;color:var(--ink)">${skLine}</div>
+  <p>${res.text}</p>${bestNote?`<p class="small">${bestNote}</p>`:''}${newB.length?`<div class="bgrid" style="width:100%">${newB.map(b=>badgeHTML(b,p,true)).join('')}</div><p style="font-weight:800;margin:0">New ${newB.length>1?'badges':'badge'} earned!</p>`:''}${unlockNote?`<p style="font-weight:800;color:#5B83C4;margin:0">${unlockNote}. Tap Again to play it.</p>`:''}${clearedLine?`<p style="font-weight:800;color:#3A7F5D;margin:0">${clearedLine}</p>`:''}<div class="small" style="font-weight:800;color:var(--ink)">${skLine}</div>
   ${!rated.has(def.id)?fbWidget(def.id,`Enjoying ${def.name}?`):''}
   ${showNudge?`<div class="nudge"><span>You've been playing for 20 minutes. Take a quick break: look away from the screen for 20 seconds for +5 XP.</span><button class="btn" id="restB">Rest 20 seconds</button></div>`:''}
   <div class="btns row"><button class="btn" id="homeB">All games</button>${again}</div></div>`;
  $('#againB').onclick=()=>begin();$('#homeB').onclick=closeGame;wireFb(panel,def.id,def.name,false);
- const rb=$('#restB');if(rb)rb.onclick=()=>{let n=20;rb.disabled=true;S.rest.taken++;save();const tick=()=>{rb.textContent=n>0?`Look far away… ${n}`:'Rested! +5 XP';if(n<=0){p.xp+=5;save();sfx.good();return;}n--;setTimeout(tick,1000);};tick();};
+ const rb=$('#restB');if(rb)rb.onclick=()=>{let n=20;rb.disabled=true;S.rest.taken++;save();const tick=()=>{rb.textContent=n>0?`Look far away… ${n}`:'Rested! +5 XP';if(n<=0){p.xp+=5;p.rests=(p.rests||0)+1;badgeCheck(p);save();sfx.good();return;}n--;setTimeout(tick,1000);};tick();};
 }
 $('#back').addEventListener('click',closeGame);$('#pauseB').addEventListener('click',pauseGame);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!stage.hidden)closeGame();});
@@ -1648,13 +1728,13 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden){save();pau
 
 function frame(now){
  const dt=Math.min(.05,(now-last)/1000);last=now;
- if(cd>0&&!paused&&!document.hidden){const was=cd;cd-=dt;const step=v=>cdShort?(v>.35?0:1):(v>2.2?3:v>1.2?2:v>.4?1:0);if(step(was)!==step(cd))tone(cd>.4&&!cdShort?520:784,.12,'square',.04);}
- if(inst&&!document.hidden&&!paused&&cd<=0){inst.update(dt);if(!done){playMs+=dt*1000;runMs+=dt*1000;dayRec(today()).ms+=dt*1000;}}
+ if(cd>0&&!paused&&!document.hidden){const was=cd;cd-=dt;const step=v=>v>1.5?2:v>.55?1:0;if(step(was)!==step(cd)||was===2.6-dt)tone(step(cd)?520:784,.12,'square',.04);}
+ if(inst&&!document.hidden&&!paused&&cd<=0){inst.update(dt*(def.levels||SHORTCD.has(def.id)?1:pickDiff==='easy'?.75:1.1));if(!done){playMs+=dt*1000;runMs+=dt*1000;dayRec(today()).ms+=dt*1000;}}
  for(const t of toasts)t.age+=dt;toasts=toasts.filter(t=>t.age<1.3);
  ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle=C.paper;ctx.fillRect(0,0,W,H);
  if(inst){ctx.save();inst.draw(ctx);ctx.restore();}
  for(const t of toasts){const al=t.age>.95?(1.3-t.age)/.35:1;ctx.globalAlpha=al;ctx.font=`800 19px ${FD}`;const tw=Math.min(W-24,ctx.measureText(t.t).width+34),x=(W-tw)/2,y=H*.16-t.age*8;rr(ctx,x+3,y-18,tw,40,20);ctx.fillStyle=C.ink;ctx.fill();rr(ctx,x,y-21,tw,40,20);ctx.fillStyle=C.paper;ctx.fill();ctx.strokeStyle=C.ink;ctx.lineWidth=2.5;ctx.stroke();txt(ctx,t.t,W/2,y-1,19,t.col,800,FD);ctx.globalAlpha=1;}
- if(inst&&cd>0){ctx.fillStyle='rgba(233,239,241,.72)';ctx.fillRect(0,0,W,H);const lbl=cdShort?(cd>.35?'Ready':'Go!'):(cd>2.2?'3':cd>1.2?'2':cd>.4?'1':'Go!');const sz=lbl.length>2?64:110;circ(ctx,W/2,H*.42,Math.min(W,H)*.2);ctx.fillStyle=C.paper;ctx.fill();ctx.strokeStyle=C.ink;ctx.lineWidth=4;ctx.stroke();txt(ctx,lbl,W/2,H*.42+4,sz,lbl==='Go!'?C.green:C.ink,800,FD);txt(ctx,GLBL[GEST[def.id]]||'',W/2,H*.42+Math.min(W,H)*.2+34,18,C.ink,800,FD);}
+ if(inst&&cd>0){ctx.fillStyle='rgba(233,239,241,.72)';ctx.fillRect(0,0,W,H);const lbl=cd>1.5?'Ready':cd>.55?'Set':'Go!';const sz=Math.min(W,H)*(lbl==='Ready'?.12:.15);circ(ctx,W/2,H*.42,Math.min(W,H)*.2);ctx.fillStyle=C.paper;ctx.fill();ctx.strokeStyle=C.ink;ctx.lineWidth=4;ctx.stroke();txt(ctx,lbl,W/2,H*.42+4,sz,lbl==='Go!'?C.green:C.ink,800,FD);txt(ctx,GLBL[GEST[def.id]]||'',W/2,H*.42+Math.min(W,H)*.2+34,18,C.ink,800,FD);if(!def.levels&&!SHORTCD.has(def.id))txt(ctx,pickDiff==='easy'?'Easy mode':'Hard mode',W/2,H*.42-Math.min(W,H)*.2-24,16,C.muted,800,FD);}
  raf=requestAnimationFrame(frame);
 }
 function pt(e){const r=cv.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
