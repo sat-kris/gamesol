@@ -760,21 +760,35 @@ const COLORS=['#FF5A4E','#3B6CFF','#1FAF6B','#FFC21A','#8A5CF6','#E0479E'];
 const avatar=(p,lg)=>`<span class="av${lg?' lg':''}" style="background:${p.color}" aria-hidden="true">${esc((p.nick||'?').trim().charAt(0).toUpperCase())}</span>`;
 
 
+
+/* ---------- online stats & feedback (fill in to switch on) ---------- */
+const GOATCOUNTER_CODE='pocketplays';            // e.g. 'pocketplays' from pocketplays.goatcounter.com
+const GFORM={id:'1FAIpQLSedCKAxMGiiqUzFUW6UmdG7yMaSJiqXm0-QsymaK1nRLDXazQ',game:'entry.991087573',rating:'entry.1496466592',reasons:'entry.56528840',comment:'entry.951414792'}; // from the Google Form pre-filled link
+(function(){if(!GOATCOUNTER_CODE)return;const sc=document.createElement('script');sc.async=true;sc.src='https://gc.zgo.at/count.js';sc.dataset.goatcounter=`https://${GOATCOUNTER_CODE}.goatcounter.com/count`;document.head.appendChild(sc);})();
+function track(path,title){if(!GOATCOUNTER_CODE)return;const go=()=>{try{window.goatcounter&&window.goatcounter.count&&window.goatcounter.count({path,title:title||path,event:true});}catch(e){}};if(window.goatcounter&&window.goatcounter.count)go();else setTimeout(go,1500);}
+let pendingFb=null,fbTimer=0;
+function queueFb(o){pendingFb=Object.assign(pendingFb||{},o);clearTimeout(fbTimer);fbTimer=setTimeout(flushFb,8000);}
+function flushFb(){clearTimeout(fbTimer);const f=pendingFb;pendingFb=null;if(!f||!GFORM.id)return;
+ try{const body=new URLSearchParams();body.append(GFORM.game,f.game||'');body.append(GFORM.rating,f.rating||'');body.append(GFORM.reasons,(f.reasons||[]).join(', '));if(GFORM.comment)body.append(GFORM.comment,f.comment||'');
+  fetch(`https://docs.google.com/forms/d/e/${GFORM.id}/formResponse`,{method:'POST',mode:'no-cors',body,keepalive:true}).catch(()=>{});}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)flushFb();});
+window.addEventListener('pagehide',flushFb);
 /* ---------- feedback ---------- */
 const FEEDBACK_TO=''; // put the creator's WhatsApp number here (country code, digits only) to receive feedback directly
 const THUP='<svg viewBox="0 0 24 24" fill="none" stroke="#17151F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v11H4V10zM7 10l4-8a2.5 2.5 0 0 1 3 3l-1 5h6a2 2 0 0 1 2 2.3l-1.3 7A2 2 0 0 1 17.7 21H7"/></svg>';
 const THDN='<svg viewBox="0 0 24 24" fill="none" stroke="#17151F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(180deg)"><path d="M7 10v11H4V10zM7 10l4-8a2.5 2.5 0 0 1 3 3l-1 5h6a2 2 0 0 1 2 2.3l-1.3 7A2 2 0 0 1 17.7 21H7"/></svg>';
 const REASONS={up:['Fun','Relaxing','Good challenge','Want more levels'],down:['Too hard','Too easy','Confusing','Boring','Buggy']};
 const rated=new Set();
-function fbRecord(key,v){S.fb=S.fb||{};const f=S.fb[key]||(S.fb[key]={up:0,down:0,r:{}});f[v]++;save();}
+function fbRecord(key,v){S.fb=S.fb||{};const f=S.fb[key]||(S.fb[key]={up:0,down:0,r:{}});f[v]++;save();track(`feedback/${key}/${v}`,`Feedback ${key}: ${v}`);}
 function fbReason(key,r,on){const f=S.fb&&S.fb[key];if(!f)return;f.r[r]=Math.max(0,(f.r[r]||0)+(on?1:-1));save();}
 const waLink=msg=>`https://wa.me/${FEEDBACK_TO}?text=${encodeURIComponent(msg)}`;
 function fbWidget(key,label){return`<div class="fbq" data-fbkey="${key}"><span class="q">${label}</span><div class="thumbs"><button class="thumb up" data-fb="up" aria-label="Yes, I'm enjoying it">${THUP}</button><button class="thumb down" data-fb="down" aria-label="No, not really">${THDN}</button></div></div>`;}
 function wireFb(root,key,name,withText){
  root.querySelectorAll('[data-fb]').forEach(b=>b.onclick=()=>{const v=b.dataset.fb;fbRecord(key,v);rated.add(key);sfx.tick();
   const box=b.closest('.fbq'),picked=new Set();
-  box.innerHTML=`<span class="q">${v==='up'?'Great! What do you like?':'Sorry! What went wrong?'}</span><div class="rchips">${REASONS[v].map(r=>`<button data-r="${r}" aria-pressed="false">${r}</button>`).join('')}</div>${withText?'<textarea class="fbt" id="fbText" maxlength="400" placeholder="Anything else? (optional)"></textarea>':''}<a class="wa" target="_blank" rel="noopener" href="#">Send to the creator on WhatsApp</a><span class="small">Thanks for telling us.</span>`;
-  const link=box.querySelector('.wa');const upd=()=>{const t=box.querySelector('#fbText');link.href=waLink(`Pocket Plays feedback: ${name}: ${v==='up'?'enjoying it':'not enjoying it'}${picked.size?' ('+[...picked].join(', ')+')':''}${t&&t.value.trim()?'. '+t.value.trim():''}`);};upd();
+  box.innerHTML=`<span class="q">${v==='up'?'Great! What do you like?':'Sorry! What went wrong?'}</span><div class="rchips">${REASONS[v].map(r=>`<button data-r="${r}" aria-pressed="false">${r}</button>`).join('')}</div>${withText?'<textarea class="fbt" id="fbText" maxlength="400" placeholder="Anything else? (optional)"></textarea>':''}<button class="wa" type="button">Send feedback</button><span class="small fbnote">Your answer is saved even if you skip this. No names are collected.</span>`;
+  const link=box.querySelector('.wa');flushFb();queueFb({game:name,rating:v==='up'?'Enjoying':'Not enjoying',reasons:[]});const upd=()=>{const t=box.querySelector('#fbText');queueFb({reasons:[...picked],comment:t?t.value.trim():''});};upd();
+  link.onclick=()=>{picked.forEach(r=>track(`feedback/${key}/reason/${r.toLowerCase().replace(/\s+/g,'-')}`,`Reason ${key}: ${r}`));flushFb();sfx.good();box.innerHTML='<span class="q">Thanks! Your feedback was sent.</span>';};
   box.querySelectorAll('[data-r]').forEach(c=>c.onclick=()=>{const on=c.getAttribute('aria-pressed')!=='true';c.setAttribute('aria-pressed',on);on?picked.add(c.dataset.r):picked.delete(c.dataset.r);fbReason(key,c.dataset.r,on);upd();});
   const t=box.querySelector('#fbText');if(t)t.oninput=upd;});}
 function appFbHTML(){return fbWidget('app','Enjoying Pocket Plays?');}
@@ -928,13 +942,13 @@ const api={get w(){return W},get h(){return H},get mode(){return mode},hud:t=>{h
 let wake=null;
 async function keepAwake(on){try{if(on&&navigator.wakeLock&&!wake){wake=await navigator.wakeLock.request('screen');}else if(!on&&wake){await wake.release();wake=null;}}catch(e){wake=null;}}
 function openGame(id){def=G(id);stage.hidden=false;$('#stTitle').textContent=def.name;hudEl.textContent='';inst=null;done=false;toasts=[];requestAnimationFrame(resize);intro();if(!raf){last=performance.now();raf=requestAnimationFrame(frame);}keepAwake(true);}
-function closeGame(){stage.hidden=true;cancelAnimationFrame(raf);raf=0;inst=null;panel.hidden=true;keepAwake(false);render();}
+function closeGame(){flushFb();stage.hidden=true;cancelAnimationFrame(raf);raf=0;inst=null;panel.hidden=true;keepAwake(false);render();}
 const MODE_LABEL={cpu:'Start'};
 function intro(){panel.hidden=false;const daily=def.id===dailyId();
  const btns=def.modes?def.modes.map((m,i)=>`<button class="btn ${i?'alt':'pri'}" data-mode="${m}">${MODE_LABEL[m]}</button>`).join(''):`<button class="btn pri" data-mode="solo">Start</button>`;
  panel.innerHTML=`<div class="pcard">${icon(def.id)}<h3>${def.name}</h3><span class="lbl">${def.cat}</span><p>${def.how}</p>${daily?'<p style="color:var(--red);font-weight:800">Game of the day: 2× XP</p>':''}<div class="btns">${btns}</div></div>`;
  panel.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>begin(b.dataset.mode));}
-function begin(m){if(m)mode=m;resize();panel.hidden=true;toasts=[];done=false;runMs=0;S.starts[def.id]=(S.starts[def.id]||0)+1;if(def.modes){S.modes[mode]=(S.modes[mode]||0)+1;}save();hudEl.textContent='';inst=def.create(api);sfx.tick();}
+function begin(m){flushFb();if(m)mode=m;track('start/'+def.id,'Start '+def.name);resize();panel.hidden=true;toasts=[];done=false;runMs=0;S.starts[def.id]=(S.starts[def.id]||0)+1;if(def.modes){S.modes[mode]=(S.modes[mode]||0)+1;}save();hudEl.textContent='';inst=def.create(api);sfx.tick();}
 function result(res){
  const p=P();let xp=Math.max(0,Math.round(res.xp||0));const daily=def.id===dailyId();if(daily)xp*=2;
  let bestNote='';
@@ -942,7 +956,7 @@ function result(res){
  else if(res.outcome){p.rec=p.rec||{};const r=p.rec[def.id]||(p.rec[def.id]={w:0,l:0,d:0});r[res.outcome==='win'?'w':res.outcome==='loss'?'l':'d']++;bestNote=`Record vs computer: ${r.w}W ${r.l}L ${r.d}D`;}
  p.xp+=xp;p.plays[def.id]=(p.plays[def.id]||0)+1;streakTouch(p);
  p.log.push({t:Date.now(),g:def.id,s:res.score??null,o:res.outcome||null,x:xp,ms:Math.round(runMs)});if(p.log.length>800)p.log=p.log.slice(-800);
- const d=dayRec(today());d.plays++;d.xp+=xp;save();sfx.end();
+ const d=dayRec(today());d.plays++;d.xp+=xp;save();sfx.end();track('finish/'+def.id,'Finish '+def.name);
  const showNudge=!nudged&&playMs>20*60*1000;if(showNudge){nudged=true;S.rest.shown++;save();}
  panel.hidden=false;
  const again=def.modes?`<button class="btn pri" id="againB">Play again</button>`:`<button class="btn pri" id="againB">Again</button>`;
