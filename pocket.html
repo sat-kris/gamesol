@@ -1194,6 +1194,57 @@ add({id:'chess',name:'Chess',sk:{plan:1},modes:['cpu'],blurb:'The classic strate
     c.strokeStyle=C.ink;c.lineWidth=3;c.strokeRect(g.x,g.y,g.s,g.s);}};}});
 
 
+/* ---------- individual game icons (24x24, own design) ---------- */
+const W_='#FBFCFB';
+const GICON={
+lanes:'<path d="M12 3v18" stroke-dasharray="2 2.5"/><circle cx="7" cy="17" r="2.4" fill="'+W_+'"/><circle cx="17" cy="17" r="2.4" fill="'+W_+'"/><rect x="5" y="4" width="4" height="4" rx="1" fill="currentColor"/><rect x="15" y="8" width="4" height="4" rx="1" fill="currentColor"/>',
+snake:'<path d="M3 17c3 0 3-5 6-5s3 5 6 5 5-3 5-8"/><circle cx="20" cy="6" r="1.8" fill="currentColor"/><circle cx="5" cy="7" r="1.6" fill="'+W_+'"/>',
+glide:'<circle cx="10" cy="12" r="5.5" fill="'+W_+'"/><path d="M15.5 11.5l4.5 1.2-4.5 1.3"/><circle cx="11.5" cy="10.2" r="1" fill="currentColor"/><path d="M6.5 12.8c1.6 1.6 3.4 1.6 4.5 0"/>',
+skyhop:'<path d="M3 20h7M13 14.5h8M5 8.5h6"/><circle cx="17" cy="9" r="2.6" fill="'+W_+'"/><path d="M17 3.5v2"/>',
+fliprun:'<path d="M3 4h18M3 20h18"/><rect x="5" y="13" width="5" height="6" rx="1.2" fill="'+W_+'"/><path d="M13 20l2.5-4 2.5 4M13 4l2.5 4 2.5-4" fill="currentColor"/><path d="M7.5 10.5V6.5M6 8l1.5-1.5L9 8"/>',
+hurdle:'<path d="M3 20h18"/><rect x="14" y="14" width="4" height="6" rx="1" fill="currentColor"/><rect x="5" y="6" width="5" height="7" rx="1.5" fill="'+W_+'"/><path d="M11 5.5c2.5-2 5.5-1.5 7.5 1.5"/>',
+stack:'<rect x="5" y="16" width="14" height="4" rx="1" fill="'+W_+'"/><rect x="6.5" y="11" width="11" height="4" rx="1" fill="currentColor"/><rect x="9" y="5" width="11" height="4" rx="1" fill="'+W_+'"/><path d="M3 7h3"/>',
+bullseye:'<rect x="3" y="9" width="18" height="7" rx="3.5" fill="'+W_+'"/><rect x="9.5" y="10.5" width="5" height="4" rx="1" fill="currentColor"/><path d="M16 5v15M14 5h4"/>',
+beat:'<circle cx="12" cy="12" r="3.5" fill="currentColor"/><circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="9.5" stroke-dasharray="2 2.2"/>',
+golf:'<path d="M9 19V4l8 3-8 3" fill="'+W_+'"/><path d="M3 20h18"/><circle cx="16" cy="17" r="2" fill="'+W_+'"/>',
+lander:'<path d="M7.5 13h9l.8-5.5a5.3 5.3 0 0 0-10.6 0z" fill="'+W_+'"/><path d="M8 13l-2.5 4.5M16 13l2.5 4.5M3 20h18"/><path d="M10 15.5l2 3 2-3" fill="currentColor"/>',
+bricks:'<rect x="3" y="4" width="5" height="3" rx=".8" fill="currentColor"/><rect x="9.5" y="4" width="5" height="3" rx=".8" fill="currentColor"/><rect x="16" y="4" width="5" height="3" rx=".8" fill="'+W_+'"/><rect x="6" y="8.5" width="5" height="3" rx=".8" fill="'+W_+'"/><rect x="12.5" y="8.5" width="5" height="3" rx=".8" fill="currentColor"/><circle cx="13" cy="15" r="1.6" fill="'+W_+'"/><path d="M7 20h9"/>',
+ttt:'<path d="M9 3v18M15 3v18M3 9h18M3 15h18"/><path d="M4.3 4.3l3.4 3.4m0-3.4L4.3 7.7M16.3 16.3l3.4 3.4m0-3.4l-3.4 3.4"/><circle cx="12" cy="12" r="1.9"/>',
+four:'<rect x="3" y="4" width="18" height="16" rx="3" fill="'+W_+'"/><circle cx="8" cy="9" r="1.9"/><circle cx="12" cy="9" r="1.9"/><circle cx="16" cy="9" r="1.9" fill="currentColor"/><circle cx="8" cy="15" r="1.9" fill="currentColor"/><circle cx="12" cy="15" r="1.9" fill="currentColor"/><circle cx="16" cy="15" r="1.9"/>',
+reversi:'<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="3.2" fill="currentColor"/><circle cx="15" cy="9" r="3.2" fill="'+W_+'"/><circle cx="9" cy="15" r="3.2" fill="'+W_+'"/><circle cx="15" cy="15" r="3.2" fill="currentColor"/>',
+sequence:'<rect x="3" y="3" width="8" height="8" rx="2" fill="currentColor"/><rect x="13" y="3" width="8" height="8" rx="2" fill="'+W_+'"/><rect x="3" y="13" width="8" height="8" rx="2" fill="'+W_+'"/><rect x="13" y="13" width="8" height="8" rx="2" fill="'+W_+'"/><path d="M15 17h4M17 15v4"/>',
+recall:'<rect x="3" y="3" width="5" height="5" rx="1" fill="currentColor"/><rect x="9.5" y="3" width="5" height="5" rx="1"/><rect x="16" y="3" width="5" height="5" rx="1"/><rect x="3" y="9.5" width="5" height="5" rx="1"/><rect x="9.5" y="9.5" width="5" height="5" rx="1" fill="currentColor"/><rect x="16" y="9.5" width="5" height="5" rx="1"/><rect x="3" y="16" width="5" height="5" rx="1"/><rect x="9.5" y="16" width="5" height="5" rx="1"/><rect x="16" y="16" width="5" height="5" rx="1" fill="currentColor"/>',
+estimate:'<circle cx="5" cy="6" r="1.4" fill="currentColor"/><circle cx="10" cy="4" r="1.4" fill="currentColor"/><circle cx="16" cy="6" r="1.4" fill="currentColor"/><circle cx="7" cy="10" r="1.4" fill="currentColor"/><circle cx="13" cy="9.5" r="1.4" fill="currentColor"/><circle cx="19" cy="10" r="1.4" fill="currentColor"/><path d="M5 15.5c2-2 4 2 6 0s4 2 6 0M5 19.5c2-2 4 2 6 0s4 2 6 0"/>',
+hockey:'<ellipse cx="12" cy="17" rx="7" ry="2.8" fill="currentColor"/><circle cx="12" cy="8" r="4.5" fill="'+W_+'"/><circle cx="12" cy="8" r="1.6"/>',
+pong:'<circle cx="10" cy="10" r="6" fill="'+W_+'"/><path d="M14.3 14.3L19.5 19.5"/><circle cx="18.5" cy="5.5" r="1.9" fill="currentColor"/>',
+quickdraw:'<circle cx="12" cy="13" r="8" fill="'+W_+'"/><path d="M12 13V8.5M10 2.5h4M18.5 6.5l1.5-1.5"/><path d="M12 13l3.5 2" />',
+whack:'<path d="M3 20h18"/><path d="M6.5 20v-6a5.5 5.5 0 0 1 11 0v6" fill="'+W_+'"/><circle cx="10.2" cy="13.2" r="1" fill="currentColor"/><circle cx="13.8" cy="13.2" r="1" fill="currentColor"/><path d="M11 16.2h2"/>',
+pairs:'<rect x="2.5" y="5" width="8.5" height="12.5" rx="2" fill="'+W_+'"/><rect x="13" y="6.5" width="8.5" height="12.5" rx="2" fill="'+W_+'"/><path d="M6.7 13.8l-2.1-2.4a1.4 1.4 0 0 1 2.1-1.8 1.4 1.4 0 0 1 2.1 1.8z" fill="currentColor"/><path d="M17.2 15.3l-2.1-2.4a1.4 1.4 0 0 1 2.1-1.8 1.4 1.4 0 0 1 2.1 1.8z" fill="currentColor"/>',
+sums:'<path d="M4 7.5h6M7 4.5v6M14 7.5h6M4 16.5h6M14 15h6M14 18h6"/>',
+soundmem:'<path d="M4 10v4M8 6.5v11M12 3.5v17M16 7.5v9M20 10v4"/>',
+vanish:'<rect x="3" y="3" width="8" height="8" rx="2" stroke-dasharray="2 2"/><circle cx="17" cy="7" r="3.8" fill="'+W_+'"/><path d="M3.5 20.5l3.5-6 3.5 6z" fill="currentColor"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5" fill="'+W_+'"/>',
+path:'<circle cx="5" cy="19" r="2.2" fill="'+W_+'"/><circle cx="19" cy="5" r="2.2" fill="currentColor"/><path d="M7.2 19H12V5h4.8" stroke-dasharray="3 2"/>',
+blink:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" fill="'+W_+'"/><circle cx="12" cy="12" r="3.2" fill="currentColor"/>',
+chaos:'<circle cx="6" cy="6" r="2.2" fill="currentColor"/><circle cx="18" cy="7" r="2.2" fill="'+W_+'"/><circle cx="7" cy="18" r="2.2" fill="'+W_+'"/><circle cx="17.5" cy="17.5" r="2.2" fill="currentColor"/><path d="M9 8.5l2.5 2M15.5 9.5l-2 2M9.5 15.5l2-2M12 12l2.8 3"/>',
+three:'<path d="M2.5 17l1.6-7h4.3l1.6 7z" fill="'+W_+'"/><path d="M14 17l1.6-7h4.3l1.6 7z" fill="'+W_+'"/><path d="M8.3 12.5l1.6-7.5h4.2l1.6 7.5z" fill="currentColor"/><circle cx="12" cy="17.5" r="1.8" fill="currentColor"/><path d="M1.5 20.5h21"/>',
+spot:'<rect x="3" y="3" width="8" height="8" rx="2" fill="currentColor"/><rect x="13" y="3" width="8" height="8" rx="2" fill="currentColor"/><rect x="3" y="13" width="8" height="8" rx="2" fill="currentColor"/><rect x="13" y="13" width="8" height="8" rx="2" fill="'+W_+'"/>',
+opposite:'<path d="M12 3v7M9 6l3-3 3 3M12 21v-7M9 18l3 3 3-3"/><path d="M4 12h16" stroke-dasharray="2 2"/>',
+mirror:'<path d="M12 3v18" stroke-dasharray="2 2"/><path d="M3.5 8l5.5 4-5.5 4z" fill="currentColor"/><path d="M20.5 8L15 12l5.5 4z" fill="'+W_+'"/>',
+invert:'<path d="M7 4v15M4 16l3 3 3-3M17 20V5M14 8l3-3 3 3"/>',
+rules:'<rect x="2.5" y="4" width="8" height="11" rx="2" fill="'+W_+'"/><circle cx="6.5" cy="9.5" r="2.2" fill="currentColor"/><rect x="13.5" y="4" width="8" height="11" rx="2" fill="'+W_+'"/><rect x="15.6" y="7.6" width="3.8" height="3.8" fill="currentColor"/><path d="M7 19c3 2.2 7 2.2 10 0M17 19l.2-2.2M17 19l-2.2.1"/>',
+sort:'<path d="M2.5 14.5h7.5v6H2.5zM14 14.5h7.5v6H14z" fill="'+W_+'"/><path d="M12 3v5.5M12 8.5L7.5 12M12 8.5l4.5 3.5"/>',
+blocks:'<rect x="3" y="3" width="6" height="6" rx="1" fill="currentColor"/><rect x="9" y="3" width="6" height="6" rx="1" fill="'+W_+'"/><rect x="3" y="9" width="6" height="6" rx="1" fill="'+W_+'"/><rect x="15" y="15" width="6" height="6" rx="1" fill="currentColor"/><rect x="9" y="15" width="6" height="6" rx="1" fill="'+W_+'"/>',
+cannons:'<circle cx="18.5" cy="16.5" r="3.2" fill="'+W_+'"/><circle cx="18.5" cy="16.5" r="1.1" fill="currentColor"/><path d="M5 17C7 6 13 5.5 16 12.5" stroke-dasharray="2 2"/><circle cx="4.5" cy="19" r="2.3" fill="currentColor"/>',
+tally:'<path d="M5 5v14M9 5v14M13 5v14M17 5v14M3 16.5l17-8"/>',
+towers:'<path d="M2.5 20.5h19M6 20V8M12 20V8M18 20V8"/><rect x="2" y="16.5" width="8" height="3" rx="1" fill="'+W_+'"/><rect x="3.3" y="13" width="5.4" height="3" rx="1" fill="currentColor"/><rect x="14.5" y="16.5" width="7" height="3" rx="1" fill="'+W_+'"/>',
+sudoku:'<rect x="3" y="3" width="18" height="18" rx="2" fill="'+W_+'"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/><rect x="9" y="9" width="6" height="6" fill="currentColor"/><path d="M5.2 5.2l1.3-.7v3M17 17.6h2.2l-2 2.2h2"/>',
+slide:'<rect x="3" y="3" width="18" height="18" rx="2"/><rect x="4.5" y="4.5" width="4.5" height="4.5" rx="1" fill="'+W_+'"/><rect x="9.8" y="4.5" width="4.5" height="4.5" rx="1" fill="'+W_+'"/><rect x="15" y="4.5" width="4.5" height="4.5" rx="1" fill="'+W_+'"/><rect x="4.5" y="9.8" width="4.5" height="4.5" rx="1" fill="'+W_+'"/><rect x="9.8" y="9.8" width="4.5" height="4.5" rx="1" fill="currentColor"/><rect x="4.5" y="15" width="4.5" height="4.5" rx="1" fill="'+W_+'"/><path d="M12.5 17.2h5M16 15.5l1.6 1.7-1.6 1.6"/>',
+jam:'<rect x="2" y="8.5" width="12.5" height="6.5" rx="2" fill="'+W_+'"/><circle cx="5.8" cy="16" r="1.6" fill="currentColor"/><circle cx="11" cy="16" r="1.6" fill="currentColor"/><path d="M4.5 11h3M16.5 11.8h5.5M19.5 9.5l2.5 2.3-2.5 2.3"/>',
+maze:'<path d="M3 3h18v18H3z"/><path d="M7 3v10h4M15 7v14M11 17v-4M7 17h4M15 7h3"/><circle cx="18" cy="18" r="1.3" fill="currentColor"/>',
+checkers:'<ellipse cx="12" cy="16.5" rx="7.5" ry="3" fill="'+W_+'"/><path d="M4.5 12v4.5M19.5 12v4.5"/><ellipse cx="12" cy="12" rx="7.5" ry="3" fill="currentColor"/><path d="M4.5 16.5c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/>',
+chess:'<path d="M6.5 20.5h11.5l-1.2-6.2c1.3-3.3.9-6.7-2.2-8.6l-1.3-2.2-2 2C8 6.6 5.8 9.4 5.8 12l3.4-.9 1.3 2.1-3.6 3.3z" fill="'+W_+'"/><circle cx="11.8" cy="8.4" r=".9" fill="currentColor"/>'
+};
+
 /* ---------- skills (categories) & icons ---------- */
 const SKILLS=[
  {k:'wm',id:'Working memory',col:'#8E82C4',tip:'Holding and using information for a short time',ic:'<path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 6 1V5a3 3 0 0 0-3-1zM15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-6 1"/>'},
@@ -1212,7 +1263,7 @@ const META={lanes:[{focus:.6,speed:.4},60],snake:[{speed:.6,spatial:.4},30],glid
 for(const g of GAMES){if(META[g.id]){g.sk=META[g.id][0];if(META[g.id][1])g.target=META[g.id][1];}g.prim=Object.entries(g.sk||{speed:1}).sort((a,b)=>b[1]-a[1])[0][0];g.cat=SK(g.prim).id;}
 const CATS=SKILLS;
 const CAT=id=>CATS.find(c=>c.id===id);
-const icon=gid=>{const g=G(gid),c=SK(g.prim);return`<span class="ic" style="background:${c.col}"><svg viewBox="0 0 24 24" fill="none" stroke="#23313D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${c.ic}</svg></span>`;};
+const icon=gid=>{const g=G(gid),c=SK(g.prim);return`<span class="ic" style="background:${c.col}"><svg viewBox="0 0 24 24" fill="none" stroke="#23313D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:#23313D" aria-hidden="true">${GICON[gid]||c.ic}</svg></span>`;};
 const LOGO='<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="3" y="7" width="34" height="26" rx="10" fill="#E07A6B" stroke="#23313D" stroke-width="3"/><path d="M11 17v6M8 20h6" stroke="#23313D" stroke-width="3" stroke-linecap="round"/><circle cx="26" cy="18" r="2.5" fill="#FBFCFB" stroke="#23313D" stroke-width="2"/><circle cx="30" cy="23" r="2.5" fill="#FBFCFB" stroke="#23313D" stroke-width="2"/></svg>';
 const G=id=>GAMES.find(g=>g.id===id);
 const ALL=SKILLS.flatMap(sk=>GAMES.filter(g=>g.prim===sk.k).map(g=>g.id));
