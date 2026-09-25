@@ -1,0 +1,14 @@
+{
+  "name": "Pocket Plays",
+  "short_name": "Pocket Plays",
+  "description": "Quick games. Big fun.",
+  "start_url": "./pocket.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFE45C",
+  "theme_color": "#FFE45C",
+  "icons": [
+    {"src": "pocket-icon-180.png", "sizes": "180x180", "type": "image/png"},
+    {"src": "pocket-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}
