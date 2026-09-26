@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Pocket Plays Leaderboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#E9EFF1;--paper:#FBFCFB;--ink:#23313D;--muted:#5E6B75;--line:rgba(35,49,61,.14);--blue:#5B83C4;--green:#4FA37A;--red:#E07A6B;--gold:#E3B85C}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:700 15px/1.45 Nunito,system-ui,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:16px}
+header{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+h1{font:800 26px/1.1 "Baloo 2",system-ui,sans-serif;margin:0;flex:1}
+h2{font:800 18px/1.2 "Baloo 2",system-ui,sans-serif;margin:0 0 10px}
+.muted{color:var(--muted);font-size:13px}
+.card{background:var(--paper);border:2.5px solid var(--ink);border-radius:18px;padding:14px;box-shadow:3px 3px 0 var(--ink);margin-bottom:14px}
+button,select,input{font:800 14px Nunito,system-ui,sans-serif;color:var(--ink)}
+.btn{border:2.5px solid var(--ink);background:var(--paper);border-radius:12px;padding:8px 14px;cursor:pointer}
+.btn.pri{background:#3F7F86;color:#fff}
+input,select{border:2.5px solid var(--ink);border-radius:12px;padding:8px 10px;background:#fff}
+.seg{display:inline-flex;border:2.5px solid var(--ink);border-radius:12px;overflow:hidden}
+.seg button{border:0;background:var(--paper);padding:8px 14px;cursor:pointer}.seg button[aria-pressed=true]{background:var(--ink);color:#fff}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.kpi{background:var(--paper);border:2.5px solid var(--ink);border-radius:16px;padding:12px}.kpi b{display:block;font:800 26px/1 "Baloo 2",system-ui,sans-serif}.kpi span{color:var(--muted);font-size:13px}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}td.n,th.n{text-align:right}
+tr.top1 td:first-child{color:#B88A1E}tr.top2 td:first-child{color:#7D8792}tr.top3 td:first-child{color:#A8683F}
+.rank{font:800 17px "Baloo 2",system-ui,sans-serif;width:48px}
+.scroll{overflow-x:auto}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.err{color:#B4533F}
+#login{max-width:420px;margin:40px auto}
+.bar{fill:var(--blue)}.axis{fill:var(--muted);font:700 10px Nunito,sans-serif}
+@media (max-width:720px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}h1{font-size:22px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <header><h1>Pocket Plays Leaderboard</h1><span class="muted" id="updated"></span><button class="btn" id="refresh" hidden>Refresh</button><button class="btn" id="logout" hidden>Sign out</button></header>
+
+ <div class="card" id="login">
+  <h2>Owner sign-in</h2>
+  <p class="muted" style="margin-top:0">Enter the OWNER_KEY password from your Apps Script. It’s remembered on this device only.</p>
+  <form id="loginForm" style="display:flex;gap:8px"><input id="key" type="password" placeholder="Owner password" style="flex:1" autocomplete="current-password"><button class="btn pri">Sign in</button></form>
+  <p class="err" id="loginErr"></p>
+ </div>
+
+ <div id="app" hidden>
+  <div class="kpis" id="kpis"></div>
+  <div class="card">
+   <div class="tools">
+    <h2 style="margin:0;flex:1">Leaderboard</h2>
+    <div class="seg" role="group" aria-label="Period"><button data-p="all" aria-pressed="true">All time</button><button data-p="week" aria-pressed="false">This week</button></div>
+    <input id="search" type="search" placeholder="Find a player, e.g. P12" style="width:190px">
+   </div>
+   <div class="scroll"><table><thead><tr><th>Rank</th><th>Player</th><th class="n" id="xpHead">Total XP</th><th class="n">Games</th><th>Last played</th></tr></thead><tbody id="rows"></tbody></table></div>
+   <p class="muted" id="count" style="margin:8px 0 0"></p>
+  </div>
+  <div class="grid2">
+   <div class="card"><h2>Games finished per day</h2><div id="chart"></div></div>
+   <div class="card"><h2>Latest games</h2><div class="scroll"><table><thead><tr><th>When</th><th>Player</th><th class="n">XP earned</th><th class="n">Total</th></tr></thead><tbody id="recent"></tbody></table></div></div>
+  </div>
+  <p class="muted">Players are shown only as numbers (P1, P2…). Raw data is in the Players and Log tabs of your Google Sheet.</p>
+ </div>
+</div>
+<script>
+(()=>{
+const API='https://script.google.com/macros/s/AKfycbxvShFtUAF6Kz5agTkeqILzHANFTRm3IIvzftccogTEspoRn8Tv1lBOM6uhcpjZnyTU/exec';
+const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let data=null,period='all',key='';
+try{key=localStorage.getItem('pp_owner_key')||'';}catch(e){}
+const fmtN=n=>Number(n||0).toLocaleString('en-IN');
+const ago=iso=>{const t=Date.parse(iso);if(!t)return'–';const m=Math.round((Date.now()-t)/60000);if(m<1)return'just now';if(m<60)return m+' min ago';const h=Math.round(m/60);if(h<24)return h+' h ago';const d=Math.round(h/24);return d<30?d+(d===1?' day ago':' days ago'):new Date(t).toLocaleDateString('en-IN');};
+function show(signed){$('login').hidden=signed;$('app').hidden=!signed;$('refresh').hidden=!signed;$('logout').hidden=!signed;}
+async function load(){ $('updated').textContent='Loading…';
+ try{const r=await fetch(API+'?action=stats&key='+encodeURIComponent(key));const d=await r.json();
+  if(!d.ok){show(false);$('updated').textContent='';$('loginErr').textContent=d.error==='wrong_key'?'That password didn’t work. Check OWNER_KEY in your Apps Script (and that it isn’t the default).':'Something went wrong: '+(d.error||'unknown');return;}
+  data=d;try{localStorage.setItem('pp_owner_key',key);}catch(e){}show(true);$('loginErr').textContent='';render();$('updated').textContent='Updated '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+ }catch(e){$('updated').textContent='';show(false);$('loginErr').textContent='Couldn’t reach the Apps Script. Check that the web app is deployed with access set to “Anyone”.';}}
+function render(){const ps=data.players.slice(),q=$('search').value.trim().toLowerCase(),val=p=>period==='week'?p.weekXp:p.xp;
+ const active=ps.filter(p=>p.weekXp>0).length,games=ps.reduce((a,p)=>a+p.plays,0),xp=ps.reduce((a,p)=>a+p.xp,0);
+ $('kpis').innerHTML=[[fmtN(ps.length),'players'],[fmtN(active),'active this week'],[fmtN(games),'games finished'],[fmtN(xp),'total XP earned']].map(([b,s])=>`<div class="kpi"><b>${b}</b><span>${s}</span></div>`).join('');
+ const ranked=ps.filter(p=>val(p)>0).sort((a,b)=>val(b)-val(a)||parseInt(a.p.slice(1))-parseInt(b.p.slice(1))).map((p,i)=>({...p,rank:i+1}));
+ const list=q?ranked.filter(p=>p.p.toLowerCase().includes(q)):ranked;
+ $('xpHead').textContent=period==='week'?'XP this week':'Total XP';
+ $('rows').innerHTML=list.length?list.slice(0,q?200:100).map(p=>`<tr class="${p.rank<=3?'top'+p.rank:''}"><td class="rank">${p.rank}</td><td>${esc(p.p)}</td><td class="n">${fmtN(val(p))}</td><td class="n">${fmtN(p.plays)}</td><td class="muted">${ago(p.updated)}</td></tr>`).join(''):`<tr><td colspan="5" class="muted">${q?'No player matches that search.':period==='week'?'No games played yet this week.':'No players yet. Play a game on Pocket Plays to appear here.'}</td></tr>`;
+ $('count').textContent=ranked.length>100&&!q?`Showing the top 100 of ${fmtN(ranked.length)} players. Search to find anyone else.`:`${fmtN(ranked.length)} ${ranked.length===1?'player':'players'} ranked.`;
+ const dl=data.daily||[];if(!dl.length){$('chart').innerHTML='<p class="muted">No games logged yet.</p>';}else{const W=440,H=170,pl=4,pb=22,mx=Math.max(1,...dl.map(d=>d.games)),bw=(W-pl*2)/dl.length,step=Math.ceil(dl.length/6);
+  $('chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Games finished per day">${dl.map((d,i)=>{const h=(H-pb-14)*d.games/mx,x=pl+i*bw;return`<g><title>${d.day}: ${d.games} games, ${d.players} players</title><rect class="bar" x="${x+1}" y="${H-pb-h}" width="${Math.max(2,bw-3)}" height="${h}" rx="3"/>${i%step===0||i===dl.length-1?`<text class="axis" x="${x+bw/2}" y="${H-6}" text-anchor="middle">${d.day.slice(5)}</text>`:''}</g>`;}).join('')}<text class="axis" x="${pl}" y="10">max ${mx}</text></svg>`;}
+ $('recent').innerHTML=(data.recent||[]).length?data.recent.map(r=>`<tr><td class="muted">${ago(r.time)}</td><td>${esc(r.p)}</td><td class="n">+${fmtN(r.gain)}</td><td class="n">${fmtN(r.xp)}</td></tr>`).join(''):'<tr><td colspan="4" class="muted">No games yet.</td></tr>';}
+document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{period=b.dataset.p;document.querySelectorAll('[data-p]').forEach(x=>x.setAttribute('aria-pressed',x===b));render();});
+$('search').oninput=()=>data&&render();
+$('loginForm').onsubmit=e=>{e.preventDefault();key=$('key').value.trim();if(key)load();};
+$('refresh').onclick=load;
+$('logout').onclick=()=>{key='';try{localStorage.removeItem('pp_owner_key');}catch(e){}data=null;show(false);$('updated').textContent='';};
+if(key)load();else show(false);
+})();
+</script>
+</body>
+</html>
