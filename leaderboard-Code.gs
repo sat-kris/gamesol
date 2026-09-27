@@ -11,7 +11,7 @@
  * Stores only: a random device-player id, a player number (P1, P2…), total XP, weekly XP and games played.
  * No names, no personal details.
  */
-const OWNER_KEY = 'gamesolPocket';   // needed to VIEW the leaderboard (cockpit only)
+const OWNER_KEY = 'xxx';   // needed to VIEW the leaderboard (cockpit only)
 const SHEET = 'Players';
 const HEAD = ['uid', 'player', 'xp', 'weekKey', 'weekStartXp', 'plays', 'updated', 'name', 'hexId'];
 const TOP_N = 20;
