@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Pocket Plays Leaderboard</title>
+<title>Pocket Plays Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -21,8 +21,8 @@ button,select,input{font:800 14px Nunito,system-ui,sans-serif;color:var(--ink)}
 .btn.pri{background:#3F7F86;color:#fff}
 input,select{border:2.5px solid var(--ink);border-radius:12px;padding:8px 10px;background:#fff}
 .seg{display:inline-flex;border:2.5px solid var(--ink);border-radius:12px;overflow:hidden}
-.seg button{border:0;background:var(--paper);padding:8px 14px;cursor:pointer}.seg button[aria-pressed=true]{background:var(--ink);color:#fff}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.seg button{border:0;background:var(--paper);padding:8px 14px;cursor:pointer}.seg button[aria-pressed=true]{background:var(--ink);color:#fff}.tabs{display:flex;width:100%}.tabs button{flex:1;padding:10px 6px}#fbCount{font-size:12px;opacity:.8}.pid{color:var(--muted);font-size:12px;margin-left:6px}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
 .kpi{background:var(--paper);border:2.5px solid var(--ink);border-radius:16px;padding:12px}.kpi b{display:block;font:800 26px/1 "Baloo 2",system-ui,sans-serif}.kpi span{color:var(--muted);font-size:13px}
 .tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
 table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
@@ -32,14 +32,15 @@ tr.top1 td:first-child{color:#B88A1E}tr.top2 td:first-child{color:#7D8792}tr.top
 .scroll{overflow-x:auto}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .err{color:#B4533F}
+.up{color:#3A7F5D}.dn{color:#B4533F}.fb{border-bottom:1px solid var(--line);padding:8px 0}.fb:last-child{border:0}.fb p{margin:4px 0 0;font-weight:700}.tag{display:inline-block;border:2px solid var(--ink);border-radius:999px;padding:0 8px;font-size:12px;margin-right:4px}
 #login{max-width:420px;margin:40px auto}
 .bar{fill:var(--blue)}.axis{fill:var(--muted);font:700 10px Nunito,sans-serif}
-@media (max-width:720px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}h1{font-size:22px}}
+@media (max-width:720px){.kpis{grid-template-columns:repeat(2,1fr)}.kpis .kpi:last-child{grid-column:1/-1}.grid2{grid-template-columns:1fr}h1{font-size:22px}}
 </style>
 </head>
 <body>
 <div class="wrap">
- <header><h1>Pocket Plays Leaderboard</h1><span class="muted" id="updated"></span><button class="btn" id="refresh" hidden>Refresh</button><button class="btn" id="logout" hidden>Sign out</button></header>
+ <header><h1>Pocket Plays Dashboard</h1><span class="muted" id="updated"></span><button class="btn" id="refresh" hidden>Refresh</button><button class="btn" id="logout" hidden>Sign out</button></header>
 
  <div class="card" id="login">
   <h2>Owner sign-in</h2>
@@ -50,20 +51,26 @@ tr.top1 td:first-child{color:#B88A1E}tr.top2 td:first-child{color:#7D8792}tr.top
 
  <div id="app" hidden>
   <div class="kpis" id="kpis"></div>
-  <div class="card">
+  <div class="seg tabs" role="tablist" aria-label="View" style="margin-bottom:14px"><button data-t="board" aria-pressed="true">🏆 Leaderboard</button><button data-t="fb" aria-pressed="false">💬 Feedback <span id="fbCount"></span></button><button data-t="games" aria-pressed="false">🎮 Games</button></div>
+  <section data-sec="fb" hidden><div class="card">
+   <div class="tools"><h2 style="margin:0;flex:1">Feedback from players</h2><select id="fbFilter" aria-label="Filter feedback"><option value="all">All feedback</option><option value="up">👍 Enjoying</option><option value="down">👎 Not enjoying</option><option value="comment">With a comment</option></select></div>
+   <div id="feedback"></div>
+  </div></section>
+  <section data-sec="games" hidden><div class="card"><h2>Games played</h2><div class="scroll"><table><thead><tr><th>Game</th><th class="n">Plays</th><th class="n">Players</th><th class="n">XP given</th><th class="n">👍</th><th class="n">👎</th></tr></thead><tbody id="games"></tbody></table></div></div></section>
+  <section data-sec="board"><div class="card">
    <div class="tools">
     <h2 style="margin:0;flex:1">Leaderboard</h2>
     <div class="seg" role="group" aria-label="Period"><button data-p="all" aria-pressed="true">All time</button><button data-p="week" aria-pressed="false">This week</button></div>
-    <input id="search" type="search" placeholder="Find a player, e.g. P12" style="width:190px">
+    <input id="search" type="search" placeholder="Find a name or P12" style="width:190px">
    </div>
    <div class="scroll"><table><thead><tr><th>Rank</th><th>Player</th><th class="n" id="xpHead">Total XP</th><th class="n">Games</th><th>Last played</th></tr></thead><tbody id="rows"></tbody></table></div>
    <p class="muted" id="count" style="margin:8px 0 0"></p>
   </div>
   <div class="grid2">
    <div class="card"><h2>Games finished per day</h2><div id="chart"></div></div>
-   <div class="card"><h2>Latest games</h2><div class="scroll"><table><thead><tr><th>When</th><th>Player</th><th class="n">XP earned</th><th class="n">Total</th></tr></thead><tbody id="recent"></tbody></table></div></div>
-  </div>
-  <p class="muted">Players are shown only as numbers (P1, P2…). Raw data is in the Players and Log tabs of your Google Sheet.</p>
+   <div class="card"><h2>Latest games</h2><div class="scroll"><table><thead><tr><th>When</th><th>Player</th><th>Game</th><th class="n">XP</th></tr></thead><tbody id="recent"></tbody></table></div></div>
+  </div></section>
+  <p class="muted">Players have random game names (like Zippo) and a player number (P1, P2…), never real names. Raw data is in the Players, Log and Feedback tabs of your Google Sheet. Feedback also still goes to your Google Form.</p>
  </div>
 </div>
 <script>
@@ -82,17 +89,24 @@ async function load(){ $('updated').textContent='Loading…';
  }catch(e){$('updated').textContent='';show(false);$('loginErr').textContent='Couldn’t reach the Apps Script. Check that the web app is deployed with access set to “Anyone”.';}}
 function render(){const ps=data.players.slice(),q=$('search').value.trim().toLowerCase(),val=p=>period==='week'?p.weekXp:p.xp;
  const active=ps.filter(p=>p.weekXp>0).length,games=ps.reduce((a,p)=>a+p.plays,0),xp=ps.reduce((a,p)=>a+p.xp,0);
- $('kpis').innerHTML=[[fmtN(ps.length),'players'],[fmtN(active),'active this week'],[fmtN(games),'games finished'],[fmtN(xp),'total XP earned']].map(([b,s])=>`<div class="kpi"><b>${b}</b><span>${s}</span></div>`).join('');
+ $('kpis').innerHTML=[[fmtN(ps.length),'players'],[fmtN(active),'active this week'],[fmtN(games),'games finished'],[fmtN(xp),'total XP earned'],[fmtN(data.feedbackTotal||0),'feedback received']].map(([b,s])=>`<div class="kpi"><b>${b}</b><span>${s}</span></div>`).join('');
  const ranked=ps.filter(p=>val(p)>0).sort((a,b)=>val(b)-val(a)||parseInt(a.p.slice(1))-parseInt(b.p.slice(1))).map((p,i)=>({...p,rank:i+1}));
- const list=q?ranked.filter(p=>p.p.toLowerCase().includes(q)):ranked;
+ const list=q?ranked.filter(p=>p.p.toLowerCase().includes(q)||String(p.name||'').toLowerCase().includes(q)||String(p.hid||'').includes(q)):ranked;
  $('xpHead').textContent=period==='week'?'XP this week':'Total XP';
- $('rows').innerHTML=list.length?list.slice(0,q?200:100).map(p=>`<tr class="${p.rank<=3?'top'+p.rank:''}"><td class="rank">${p.rank}</td><td>${esc(p.p)}</td><td class="n">${fmtN(val(p))}</td><td class="n">${fmtN(p.plays)}</td><td class="muted">${ago(p.updated)}</td></tr>`).join(''):`<tr><td colspan="5" class="muted">${q?'No player matches that search.':period==='week'?'No games played yet this week.':'No players yet. Play a game on Pocket Plays to appear here.'}</td></tr>`;
+ $('rows').innerHTML=list.length?list.slice(0,q?200:100).map(p=>`<tr class="${p.rank<=3?'top'+p.rank:''}"><td class="rank">${p.rank}</td><td>${p.name?`${esc(p.name)}<span class="pid">${esc(p.p)}</span>`:esc(p.p)}</td><td class="n">${fmtN(val(p))}</td><td class="n">${fmtN(p.plays)}</td><td class="muted">${ago(p.updated)}</td></tr>`).join(''):`<tr><td colspan="5" class="muted">${q?'No player matches that search.':period==='week'?'No games played yet this week.':'No players yet. Play a game on Pocket Plays to appear here.'}</td></tr>`;
  $('count').textContent=ranked.length>100&&!q?`Showing the top 100 of ${fmtN(ranked.length)} players. Search to find anyone else.`:`${fmtN(ranked.length)} ${ranked.length===1?'player':'players'} ranked.`;
  const dl=data.daily||[];if(!dl.length){$('chart').innerHTML='<p class="muted">No games logged yet.</p>';}else{const W=440,H=170,pl=4,pb=22,mx=Math.max(1,...dl.map(d=>d.games)),bw=(W-pl*2)/dl.length,step=Math.ceil(dl.length/6);
   $('chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Games finished per day">${dl.map((d,i)=>{const h=(H-pb-14)*d.games/mx,x=pl+i*bw;return`<g><title>${d.day}: ${d.games} games, ${d.players} players</title><rect class="bar" x="${x+1}" y="${H-pb-h}" width="${Math.max(2,bw-3)}" height="${h}" rx="3"/>${i%step===0||i===dl.length-1?`<text class="axis" x="${x+bw/2}" y="${H-6}" text-anchor="middle">${d.day.slice(5)}</text>`:''}</g>`;}).join('')}<text class="axis" x="${pl}" y="10">max ${mx}</text></svg>`;}
- $('recent').innerHTML=(data.recent||[]).length?data.recent.map(r=>`<tr><td class="muted">${ago(r.time)}</td><td>${esc(r.p)}</td><td class="n">+${fmtN(r.gain)}</td><td class="n">${fmtN(r.xp)}</td></tr>`).join(''):'<tr><td colspan="4" class="muted">No games yet.</td></tr>';}
+ const gs=(data.games||[]).slice().sort((a,b)=>b.plays-a.plays||(b.up+b.down)-(a.up+a.down));
+ $('games').innerHTML=gs.length?gs.map(g=>`<tr><td>${esc(g.game)}</td><td class="n">${fmtN(g.plays)}</td><td class="n">${fmtN(g.players)}</td><td class="n">${fmtN(g.xp)}</td><td class="n up">${g.up||''}</td><td class="n dn">${g.down||''}</td></tr>`).join(''):'<tr><td colspan="6" class="muted">No games logged yet.</td></tr>';
+ const ff=$('fbFilter').value,fbl=(data.feedback||[]).filter(r=>{const rt=r.rating.toLowerCase();return ff==='all'||(ff==='up'&&rt==='enjoying')||(ff==='down'&&rt==='not enjoying')||(ff==='comment'&&r.comment);});
+ $('feedback').innerHTML=fbl.length?fbl.map(r=>{const rt=r.rating.toLowerCase(),icon=rt==='enjoying'?'<span class="up">👍</span>':rt==='not enjoying'?'<span class="dn">👎</span>':'📝';const long=r.comment.length>300;return`<div class="fb"><div>${icon} <b>${esc(r.game||'App')}</b> <span class="muted">· ${esc(r.p||'player')} · ${ago(r.time)}</span></div>${r.reasons?`<div style="margin-top:4px">${r.reasons.split(',').map(x=>x.trim()).filter(Boolean).slice(0,6).map(x=>`<span class="tag">${esc(x.slice(0,60))}</span>`).join('')}</div>`:''}${r.comment?`<p>${esc(long?r.comment.slice(0,300)+'…':r.comment)}</p>`:''}</div>`;}).join(''):`<p class="muted" style="margin:0">${ff==='all'?'No feedback yet. It appears here when players tap thumbs up or down.':'No feedback matches this filter.'}</p>`;
+ $('fbCount').textContent=(data.feedbackTotal||0)?'('+fmtN(data.feedbackTotal)+')':'';
+ $('recent').innerHTML=(data.recent||[]).length?data.recent.map(r=>`<tr><td class="muted">${ago(r.time)}</td><td>${esc(r.name||r.p)}</td><td>${esc(r.game||'–')}</td><td class="n">+${fmtN(r.gain)}</td></tr>`).join(''):'<tr><td colspan="4" class="muted">No games yet.</td></tr>';}
+document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-t]').forEach(x=>x.setAttribute('aria-pressed',x===b));document.querySelectorAll('[data-sec]').forEach(s=>s.hidden=s.dataset.sec!==b.dataset.t);try{localStorage.setItem('pp_dash_tab',b.dataset.t);}catch(e){}});
+try{const t=localStorage.getItem('pp_dash_tab');const b=t&&document.querySelector(`[data-t="${t}"]`);if(b)b.click();}catch(e){}
 document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{period=b.dataset.p;document.querySelectorAll('[data-p]').forEach(x=>x.setAttribute('aria-pressed',x===b));render();});
-$('search').oninput=()=>data&&render();
+$('search').oninput=()=>data&&render();$('fbFilter').onchange=()=>data&&render();
 $('loginForm').onsubmit=e=>{e.preventDefault();key=$('key').value.trim();if(key)load();};
 $('refresh').onclick=load;
 $('logout').onclick=()=>{key='';try{localStorage.removeItem('pp_owner_key');}catch(e){}data=null;show(false);$('updated').textContent='';};
