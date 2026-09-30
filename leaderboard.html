@@ -8,109 +8,257 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#E9EFF1;--paper:#FBFCFB;--ink:#23313D;--muted:#5E6B75;--line:rgba(35,49,61,.14);--blue:#5B83C4;--green:#4FA37A;--red:#E07A6B;--gold:#E3B85C}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:700 15px/1.45 Nunito,system-ui,sans-serif}
-.wrap{max-width:980px;margin:0 auto;padding:16px}
-header{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+:root{--bg:#E9EFF1;--paper:#FBFCFB;--ink:#23313D;--muted:#5E6B75;--line:rgba(35,49,61,.14);--s1:#2a78d6;--s2:#eb6834;--track:#E3E8EC;--good:#2E7D4F;--bad:#B4533F}
+*{box-sizing:border-box}html,body{background:var(--bg)}body{margin:0;color:var(--ink);font:700 15px/1.45 Nunito,system-ui,sans-serif}
+.wrap{max-width:1040px;margin:0 auto;padding:16px}
+header{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
 h1{font:800 26px/1.1 "Baloo 2",system-ui,sans-serif;margin:0;flex:1}
-h2{font:800 18px/1.2 "Baloo 2",system-ui,sans-serif;margin:0 0 10px}
+h2{font:800 18px/1.2 "Baloo 2",system-ui,sans-serif;margin:0}
+h3{font:800 16px/1.2 "Baloo 2",system-ui,sans-serif;margin:14px 0 6px}
 .muted{color:var(--muted);font-size:13px}
-.card{background:var(--paper);border:2.5px solid var(--ink);border-radius:18px;padding:14px;box-shadow:3px 3px 0 var(--ink);margin-bottom:14px}
+.card{background:var(--paper);border:2.5px solid var(--ink);border-radius:18px;padding:14px;box-shadow:3px 3px 0 var(--ink);margin-bottom:14px;min-width:0}
+.ch{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}.ch h2{flex:1}
 button,select,input{font:800 14px Nunito,system-ui,sans-serif;color:var(--ink)}
 .btn{border:2.5px solid var(--ink);background:var(--paper);border-radius:12px;padding:8px 14px;cursor:pointer}
-.btn.pri{background:#3F7F86;color:#fff}
+.btn.pri{background:#3F7F86;color:#fff}.btn.sm{padding:5px 10px;font-size:13px;border-width:2px;border-radius:10px}
+.link{background:none;border:0;color:#2F6F76;text-decoration:underline;cursor:pointer;padding:4px 0;font-size:13px}
 input,select{border:2.5px solid var(--ink);border-radius:12px;padding:8px 10px;background:#fff}
-.seg{display:inline-flex;border:2.5px solid var(--ink);border-radius:12px;overflow:hidden}
-.seg button{border:0;background:var(--paper);padding:8px 14px;cursor:pointer}.seg button[aria-pressed=true]{background:var(--ink);color:#fff}.tabs{display:flex;width:100%}.tabs button{flex:1;padding:10px 6px}#fbCount{font-size:12px;opacity:.8}.pid{color:var(--muted);font-size:12px;margin-left:6px}
-.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
-.kpi{background:var(--paper);border:2.5px solid var(--ink);border-radius:16px;padding:12px}.kpi b{display:block;font:800 26px/1 "Baloo 2",system-ui,sans-serif}.kpi span{color:var(--muted);font-size:13px}
-.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
-table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
-th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}td.n,th.n{text-align:right}
-tr.top1 td:first-child{color:#B88A1E}tr.top2 td:first-child{color:#7D8792}tr.top3 td:first-child{color:#A8683F}
-.rank{font:800 17px "Baloo 2",system-ui,sans-serif;width:48px}
-.scroll{overflow-x:auto}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.err{color:#B4533F}
-.up{color:#3A7F5D}.dn{color:#B4533F}.fb{border-bottom:1px solid var(--line);padding:8px 0}.fb:last-child{border:0}.fb p{margin:4px 0 0;font-weight:700}.tag{display:inline-block;border:2px solid var(--ink);border-radius:999px;padding:0 8px;font-size:12px;margin-right:4px}
-#login{max-width:420px;margin:40px auto}
-.bar{fill:var(--blue)}.axis{fill:var(--muted);font:700 10px Nunito,sans-serif}
-@media (max-width:720px){.kpis{grid-template-columns:repeat(2,1fr)}.kpis .kpi:last-child{grid-column:1/-1}.grid2{grid-template-columns:1fr}h1{font-size:22px}}
+.seg{display:inline-flex;border:2.5px solid var(--ink);border-radius:12px;overflow:hidden;max-width:100%}
+.seg button{border:0;background:var(--paper);padding:7px 12px;cursor:pointer;white-space:nowrap}.seg button[aria-pressed=true]{background:var(--ink);color:#fff}
+.bar-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.kpi{background:var(--paper);border:2.5px solid var(--ink);border-radius:16px;padding:10px 12px;text-align:left;cursor:pointer;box-shadow:2px 2px 0 var(--ink);min-width:0}
+.kpi:hover{transform:translateY(-1px)}.kpi b{display:block;font:800 26px/1.05 "Baloo 2",system-ui,sans-serif}.kpi .l{display:block;color:var(--muted);font-size:12.5px}
+.delta{display:inline-block;font-size:12px;margin-top:3px}.delta.up{color:var(--good)}.delta.dn{color:var(--bad)}.delta.eq{color:var(--muted)}
+.ins{margin:0;padding-left:0;list-style:none}.ins li{padding:7px 0;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:flex-start}.ins li:last-child{border:0}.ins .ico{width:22px;text-align:center;flex:none}.ins button{margin-left:auto;flex:none}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+svg text{font:700 10.5px Nunito,system-ui,sans-serif;fill:var(--muted)}svg .val{fill:var(--ink);font-weight:800}
+.hit{cursor:pointer}.hit:hover .mk{opacity:.8}
+.hbar{display:grid;grid-template-columns:minmax(0,34%) minmax(0,1fr) auto;gap:8px;align-items:center;padding:5px 0;cursor:pointer;border-radius:8px}.hbar:hover{background:#F1F5F7}
+.hbar .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hbar .tr{display:block;height:12px;background:var(--track);border-radius:6px;overflow:hidden}.hbar .fl{display:block;height:100%;background:var(--s1);border-radius:0 4px 4px 0}.hbar .v{font-size:13px;min-width:56px;text-align:right}
+.split{display:flex;height:22px;border-radius:8px;overflow:hidden;gap:2px;background:var(--paper)}.split i{display:block;height:100%}
+.legend{display:flex;gap:14px;font-size:12.5px;color:var(--muted);margin-top:6px}.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;background:var(--c);vertical-align:-1px}
+.chip{display:inline-block;border:2px solid var(--ink);border-radius:999px;padding:1px 9px;font-size:12px;margin:0 4px 5px 0;background:#fff}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}td.n,th.n{text-align:right}tr.click{cursor:pointer}tr.click:hover td{background:#F1F5F7}
+.scroll{overflow-x:auto}.pid{color:var(--muted);font-size:12px;margin-left:5px}
+.fb{border-bottom:1px solid var(--line);padding:8px 0}.fb:last-child{border:0}.fb p{margin:4px 0 0}
+.upc{color:var(--good)}.dnc{color:var(--bad)}
+#login{max-width:420px;margin:40px auto}.err{color:var(--bad)}.warn{background:#FFF6DD;border:2px dashed #C9A94A;border-radius:12px;padding:8px 12px;margin-bottom:12px;font-size:13.5px}
+#tip{position:fixed;pointer-events:none;background:var(--ink);color:#fff;font-size:12.5px;padding:6px 9px;border-radius:8px;z-index:50;max-width:240px;opacity:0;transition:opacity .08s}
+#sheet{position:fixed;inset:0;background:rgba(35,49,61,.45);z-index:40;display:flex;justify-content:center;align-items:flex-end}#sheet[hidden]{display:none}
+#sheet .pan{background:var(--bg);width:100%;max-width:760px;max-height:92vh;overflow:auto;border:2.5px solid var(--ink);border-bottom:0;border-radius:20px 20px 0 0;padding:14px 16px 26px}
+#sheet .top{display:flex;gap:8px;align-items:center;position:sticky;top:-14px;background:var(--bg);padding:6px 0 10px;z-index:2}#sheet .top h2{flex:1;font-size:20px}
+.mini{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:10px}.mini div{background:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:8px}.mini b{display:block;font:800 20px/1.1 "Baloo 2",system-ui,sans-serif}.mini span{font-size:12px;color:var(--muted)}
+@media (min-width:900px){#sheet{align-items:center}#sheet .pan{border-radius:20px;border-bottom:2.5px solid var(--ink)}}
+@media (max-width:860px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:720px){.grid2{grid-template-columns:minmax(0,1fr)}h1{font-size:22px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.mini{grid-template-columns:repeat(2,minmax(0,1fr))}.wrap{padding:12px}}
 </style>
 </head>
 <body>
 <div class="wrap">
- <header><h1>Pocket Plays Dashboard</h1><span class="muted" id="updated"></span><button class="btn" id="refresh" hidden>Refresh</button><button class="btn" id="logout" hidden>Sign out</button></header>
+ <header><h1>Pocket Plays Dashboard</h1><span class="muted" id="updated"></span><button class="btn sm" id="refresh" hidden>Refresh</button><button class="btn sm" id="logout" hidden>Sign out</button></header>
 
  <div class="card" id="login">
-  <h2>Owner sign-in</h2>
+  <h2 style="margin-bottom:8px">Owner sign-in</h2>
   <p class="muted" style="margin-top:0">Enter the OWNER_KEY password from your Apps Script. It’s remembered on this device only.</p>
-  <form id="loginForm" style="display:flex;gap:8px"><input id="key" type="password" placeholder="Owner password" style="flex:1" autocomplete="current-password"><button class="btn pri">Sign in</button></form>
+  <form id="loginForm" style="display:flex;gap:8px"><input id="key" type="password" placeholder="Owner password" style="flex:1;min-width:0" autocomplete="current-password"><button class="btn pri">Sign in</button></form>
   <p class="err" id="loginErr"></p>
  </div>
 
  <div id="app" hidden>
+  <div id="warn"></div>
+  <div class="bar-row"><div class="seg" role="group" aria-label="Period" id="per"><button data-per="1">Today</button><button data-per="7">7 days</button><button data-per="30">30 days</button><button data-per="all">All time</button></div><span class="muted" id="perNote"></span></div>
   <div class="kpis" id="kpis"></div>
-  <div class="seg tabs" role="tablist" aria-label="View" style="margin-bottom:14px"><button data-t="board" aria-pressed="true">🏆 Leaderboard</button><button data-t="fb" aria-pressed="false">💬 Feedback <span id="fbCount"></span></button><button data-t="games" aria-pressed="false">🎮 Games</button></div>
-  <section data-sec="fb" hidden><div class="card">
-   <div class="tools"><h2 style="margin:0;flex:1">Feedback from players</h2><select id="fbFilter" aria-label="Filter feedback"><option value="all">All feedback</option><option value="up">👍 Enjoying</option><option value="down">👎 Not enjoying</option><option value="comment">With a comment</option></select></div>
-   <div id="feedback"></div>
-  </div></section>
-  <section data-sec="games" hidden><div class="card"><h2>Games played</h2><div class="scroll"><table><thead><tr><th>Game</th><th class="n">Plays</th><th class="n">Players</th><th class="n">XP given</th><th class="n">👍</th><th class="n">👎</th></tr></thead><tbody id="games"></tbody></table></div></div></section>
-  <section data-sec="board"><div class="card">
-   <div class="tools">
-    <h2 style="margin:0;flex:1">Leaderboard</h2>
-    <div class="seg" role="group" aria-label="Period"><button data-p="all" aria-pressed="true">All time</button><button data-p="week" aria-pressed="false">This week</button></div>
-    <input id="search" type="search" placeholder="Find a name or P12" style="width:190px">
-   </div>
-   <div class="scroll"><table><thead><tr><th>Rank</th><th>Player</th><th class="n" id="xpHead">Total XP</th><th class="n">Games</th><th>Last played</th></tr></thead><tbody id="rows"></tbody></table></div>
-   <p class="muted" id="count" style="margin:8px 0 0"></p>
-  </div>
+  <div class="card"><div class="ch"><h2>💡 What stands out</h2></div><ul class="ins" id="insights"></ul></div>
   <div class="grid2">
-   <div class="card"><h2>Games finished per day</h2><div id="chart"></div></div>
-   <div class="card"><h2>Latest games</h2><div class="scroll"><table><thead><tr><th>When</th><th>Player</th><th>Game</th><th class="n">XP</th></tr></thead><tbody id="recent"></tbody></table></div></div>
-  </div></section>
-  <p class="muted">Players have random game names (like Zippo) and a player number (P1, P2…), never real names. Raw data is in the Players, Log and Feedback tabs of your Google Sheet. Feedback also still goes to your Google Form.</p>
+   <div class="card"><div class="ch"><h2 id="trendT">Activity</h2><div class="seg" role="group" aria-label="Measure"><button data-m="games" aria-pressed="true">Games</button><button data-m="players" aria-pressed="false">Players</button></div></div><div id="trend"></div><p class="muted" id="trendHint" style="margin:6px 0 0">Tap a bar for that day’s details.</p></div>
+   <div class="card"><div class="ch"><h2>Top games</h2><button class="link" data-open="games">All games ›</button></div><div id="topGames"></div></div>
+   <div class="card"><div class="ch"><h2>When people play</h2><span class="muted">India time</span></div><div id="hours"></div></div>
+   <div class="card"><div class="ch"><h2>How engaged players are</h2></div><div id="buckets"></div><p class="muted" style="margin:6px 0 0">Players by games finished in this period. Tap a bar to see who.</p></div>
+   <div class="card"><div class="ch"><h2>Feedback</h2><button class="link" data-open="feedback">All feedback ›</button></div><div id="fbSum"></div></div>
+   <div class="card"><div class="ch"><h2>🏆 Leaderboard</h2><button class="link" data-open="board">Full leaderboard ›</button></div><div id="board"></div></div>
+  </div>
+  <p class="muted">Players have random game names (like Zippo) and a player number (P1, P2…), never real names. Raw data is in the Players, Log and Feedback tabs of your Google Sheet.</p>
  </div>
 </div>
+<div id="sheet" hidden><div class="pan" role="dialog" aria-modal="true" aria-labelledby="shT"><div class="top"><button class="btn sm" id="shBack" aria-label="Back">‹ Back</button><h2 id="shT"></h2><button class="btn sm" id="shClose" aria-label="Close">✕</button></div><div id="shB"></div></div></div>
+<div id="tip" role="tooltip"></div>
 <script>
 (()=>{
 const API='https://script.google.com/macros/s/AKfycbxvShFtUAF6Kz5agTkeqILzHANFTRm3IIvzftccogTEspoRn8Tv1lBOM6uhcpjZnyTU/exec';
-const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-let data=null,period='all',key='';
-try{key=localStorage.getItem('pp_owner_key')||'';}catch(e){}
-const fmtN=n=>Number(n||0).toLocaleString('en-IN');
-const ago=iso=>{const t=Date.parse(iso);if(!t)return'–';const m=Math.round((Date.now()-t)/60000);if(m<1)return'just now';if(m<60)return m+' min ago';const h=Math.round(m/60);if(h<24)return h+' h ago';const d=Math.round(h/24);return d<30?d+(d===1?' day ago':' days ago'):new Date(t).toLocaleDateString('en-IN');};
-function show(signed){$('login').hidden=signed;$('app').hidden=!signed;$('refresh').hidden=!signed;$('logout').hidden=!signed;}
-async function load(){ $('updated').textContent='Loading…';
+const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const N=n=>Number(n||0).toLocaleString('en-IN'),pct=(a,b)=>b?Math.round(a/b*100):0,IST=19800,DAY=86400;
+let D=null,key='',per='7',measure='games',stack=[];
+try{key=localStorage.getItem('pp_owner_key')||'';per=localStorage.getItem('pp_dash_per')||'7';}catch(e){}
+const dk=t=>new Date((t+IST)*1000).toISOString().slice(0,10),hr=t=>Math.floor((t+IST)/3600)%24;
+const dShort=k=>{const d=new Date(k+'T00:00:00Z');return d.toLocaleDateString('en-IN',{day:'numeric',month:'short',timeZone:'UTC'});};
+const ago=t=>{if(!t)return'–';const m=Math.round((Date.now()/1000-t)/60);if(m<1)return'just now';if(m<60)return m+' min ago';const h=Math.round(m/60);if(h<24)return h+' h ago';const d=Math.round(h/24);return d<45?d+(d===1?' day ago':' days ago'):new Date(t*1000).toLocaleDateString('en-IN');};
+const hrName=h=>{const f=x=>{const a=x%12||12;return a+(x<12?' am':' pm');};return f(h)+'–'+f((h+1)%24);};
+
+/* ---------- data prep ---------- */
+function prep(d){
+ const players={};(d.players||[]).forEach(p=>{const n=parseInt(String(p.p).replace(/\D/g,''))||0;players[n]={n,p:'P'+n,name:p.name||'',hid:p.hid||'',xp:p.xp||0,weekXp:p.weekXp||0,plays:p.plays||0,updated:Date.parse(p.updated)/1000||0};});
+ const gl=d.gl||[],ev=(d.ev||[]).map(e=>({t:e[0],n:e[1],gain:e[2],g:gl[e[3]]||''})).sort((a,b)=>a.t-b.t);
+ const first={},last={},days={};ev.forEach(e=>{if(!(e.n in first))first[e.n]=e.t;last[e.n]=e.t;(days[e.n]=days[e.n]||new Set()).add(dk(e.t));if(!players[e.n])players[e.n]={n:e.n,p:'P'+e.n,name:'',hid:'',xp:0,weekXp:0,plays:0,updated:e.t};});
+ const fb=(d.fb||[]).map(r=>{const m=String(r[1]).match(/P(\d+)/);return{t:r[0],who:r[1],n:m?+m[1]:null,game:r[2]||'App',rating:String(r[3]).toLowerCase(),reasons:String(r[4]||''),comment:String(r[5]||'')};});
+ return{players,ev,first,last,days,fb,v2:!!d.ev,capped:!!d.logCapped};}
+const nm=n=>{const p=D.players[n];return p&&p.name?`${esc(p.name)}<span class="pid">P${n}</span>`:'P'+n;};
+const nmPlain=n=>{const p=D.players[n];return p&&p.name?`${p.name} (P${n})`:'P'+n;};
+const isUp=r=>r==='enjoying'||r==='up',isDn=r=>r==='not enjoying'||r==='down';
+
+/* ---------- periods ---------- */
+function range(){const now=Date.now()/1000,today0=Math.floor((now+IST)/DAY)*DAY-IST;if(per==='all')return{s:0,e:now+1,ps:null,pe:null,n:null,label:'all time'};
+ const n=+per,s=today0-(n-1)*DAY;return{s,e:now+1,ps:s-n*DAY,pe:s,n,label:n===1?'today':`the last ${n} days`,prevLabel:n===1?'yesterday':`the ${n} days before`};}
+const inR=(t,a,b)=>t>=a&&t<b;
+
+/* ---------- render main ---------- */
+function render(){
+ const R=range(),ev=D.ev.filter(e=>inR(e.t,R.s,R.e)),pev=R.ps!=null?D.ev.filter(e=>inR(e.t,R.ps,R.pe)):null;
+ document.querySelectorAll('[data-per]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.per===per));
+ $('perNote').textContent=R.n?`Compared with ${R.prevLabel}`:(D.capped?'Only the latest 20,000 games are included':'');
+ const act=new Set(ev.map(e=>e.n)),pact=pev?new Set(pev.map(e=>e.n)):null;
+ const newP=[...act].filter(n=>D.first[n]>=R.s),pnew=pev?[...pact].filter(n=>D.first[n]>=R.ps):null;
+ const ret=R.n?[...act].filter(n=>D.first[n]<R.s):[...act].filter(n=>(D.days[n]||new Set()).size>=2);
+ const fbs=D.fb.filter(r=>inR(r.t,R.s,R.e)),up=fbs.filter(r=>isUp(r.rating)).length,dn=fbs.filter(r=>isDn(r.rating)).length;
+ const pfb=pev?D.fb.filter(r=>inR(r.t,R.ps,R.pe)):null;
+ const delta=(a,b,unit)=>{if(b==null)return'';if(!b&&!a)return'<span class="delta eq">no change</span>';if(!b)return'<span class="delta up">▲ new</span>';const c=Math.round((a-b)/b*100);return`<span class="delta ${c>0?'up':c<0?'dn':'eq'}">${c>0?'▲':c<0?'▼':'■'} ${Math.abs(c)}%${unit||''}</span>`;};
+ const gpp=act.size?(ev.length/act.size):0,pgpp=pact&&pact.size?(pev.length/pact.size):null;
+ const tiles=[
+  ['active','Active players',N(act.size),delta(act.size,pact&&pact.size)],
+  ['new','New players',N(newP.length),delta(newP.length,pnew&&pnew.length)],
+  ['games','Games finished',N(ev.length),delta(ev.length,pev&&pev.length)],
+  ['gpp','Games per player',gpp?gpp.toFixed(1):'0',pgpp!=null?delta(gpp,pgpp):''],
+  ['ret',R.n?'Came back':'Played on 2+ days',act.size?pct(ret.length,act.size)+'%':'–',`<span class="delta eq">${N(ret.length)} of ${N(act.size)}</span>`],
+  ['fb','Enjoying (👍)',up+dn?pct(up,up+dn)+'%':'–',`<span class="delta eq">${N(up+dn)} ${up+dn===1?'rating':'ratings'}</span>`]];
+ $('kpis').innerHTML=tiles.map(([k,l,v,d])=>`<button class="kpi" data-kpi="${k}"><b>${v}</b><span class="l">${l}</span>${d}</button>`).join('');
+ D.cur={R,ev,act,newP,ret,fbs};
+ insights(R,ev,pev,act,pact,fbs);
+ trend(R,ev);topGames(ev);hours(ev);buckets(ev,act);fbSum(fbs);board();}
+
+function insights(R,ev,pev,act,pact,fbs){const out=[],now=Date.now()/1000;
+ if(!ev.length)out.push(['😴',`No games were finished ${R.label}.`]);
+ if(pact&&pact.size){const c=Math.round((act.size-pact.size)/pact.size*100);if(Math.abs(c)>=10)out.push([c>0?'📈':'📉',`Active players are ${c>0?'up':'down'} <b>${Math.abs(c)}%</b> on ${R.prevLabel} (${N(act.size)} vs ${N(pact.size)}).`]);}
+ const byG=count(ev,e=>e.g);if(byG.length){const [g,c]=byG[0];out.push(['🎮',`Most played: <b>${esc(g||'(unnamed)')}</b>, ${N(c)} games (${pct(c,ev.length)}% of all).`,['game',g]]);}
+ if(ev.length>=12){const hs=Array(24).fill(0);ev.forEach(e=>hs[hr(e.t)]++);const h=hs.indexOf(Math.max(...hs));out.push(['⏰',`Busiest hour: <b>${hrName(h)}</b> India time.`]);}
+ const drift=Object.keys(D.last).map(Number).filter(n=>now-D.last[n]>=7*DAY&&now-D.last[n]<60*DAY&&(D.days[n]||new Set()).size>=3);
+ if(drift.length)out.push(['👋',`<b>${N(drift.length)}</b> regular ${drift.length===1?'player hasn’t':'players haven’t'} played for 7+ days.`,['list','Regulars who stopped playing',drift,'last']]);
+ const all=Object.keys(D.first).map(Number),once=all.filter(n=>D.ev.filter(e=>e.n===n).length===1);
+ if(all.length>=5&&once.length)out.push(['1️⃣',`<b>${pct(once.length,all.length)}%</b> of players finished only one game ever.`,['list','Players with just one game',once,'first']]);
+ const fbG={};fbs.forEach(r=>{const o=fbG[r.game]=fbG[r.game]||{u:0,d:0};if(isUp(r.rating))o.u++;else if(isDn(r.rating))o.d++;});
+ const worst=Object.entries(fbG).filter(([g,o])=>o.u+o.d>=3&&o.d/(o.u+o.d)>=.4).sort((a,b)=>b[1].d/(b[1].u+b[1].d)-a[1].d/(a[1].u+a[1].d))[0];
+ if(worst)out.push(['⚠️',`<b>${esc(worst[0])}</b> gets the most 👎: ${pct(worst[1].d,worst[1].u+worst[1].d)}% of ${worst[1].u+worst[1].d} ratings.`,['game',worst[0]]]);
+ const newP=D.cur.newP;if(newP.length)out.push(['🌱',`<b>${N(newP.length)}</b> new ${newP.length===1?'player':'players'} ${R.label}.`,['list','New players',newP,'first']]);
+ $('insights').innerHTML=out.slice(0,6).map(([i,t,a],k)=>`<li><span class="ico">${i}</span><span>${t}</span>${a?`<button class="btn sm" data-ins="${k}">View</button>`:''}</li>`).join('')||'<li class="muted">Nothing to report yet.</li>';
+ $('insights').querySelectorAll('[data-ins]').forEach(b=>b.onclick=()=>{const a=out[+b.dataset.ins][2];if(a[0]==='game')open(()=>gameView(a[1]));else open(()=>listView(a[1],a[2],a[3]));});}
+function count(arr,f){const m={};arr.forEach(x=>{const k=f(x);m[k]=(m[k]||0)+1;});return Object.entries(m).sort((a,b)=>b[1]-a[1]);}
+
+/* ---------- charts ---------- */
+function vbars(el,items,opt){/* items: [{label,value,tip,key}] one series, bars from baseline */
+ const W=Math.max(280,el.clientWidth||460),H=opt.h||170,pl=8,pr=8,pt=18,pb=22,mx=Math.max(1,...items.map(i=>i.value)),n=items.length,bw=(W-pl-pr)/Math.max(n,1),step=opt.every||Math.ceil(n/(W<420?5:8));
+ const gridY=[.5,1].map(f=>pt+(H-pt-pb)*(1-f));
+ el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="${esc(opt.aria)}">${gridY.map(y=>`<line x1="${pl}" x2="${W-pr}" y1="${y}" y2="${y}" stroke="var(--line)"/>`).join('')}<text x="${pl}" y="11">${N(mx)}</text>
+ ${items.map((it,i)=>{const h=(H-pt-pb)*it.value/mx,x=pl+i*bw,w=Math.max(2,bw-2);return`<g class="hit" data-tip="${esc(it.tip)}" ${it.key!=null?`data-k="${esc(it.key)}"`:''}><rect x="${x}" y="${pt}" width="${bw}" height="${H-pt-pb}" fill="transparent"/>${it.value?`<path class="mk" d="M${x+1},${H-pb} v${-Math.max(0,h-4)} q0,-4 4,-4 h${Math.max(0,w-8)} q4,0 4,4 v${Math.max(0,h-4)} z" fill="var(--s1)"/>`:''}${(i%step===0&&(opt.every||n-1-i>=step))||i===n-1?`<text x="${i===0?x:i===n-1?x+bw:x+bw/2}" y="${H-6}" text-anchor="${i===0?'start':i===n-1?'end':'middle'}">${esc(it.label)}</text>`:''}</g>`;}).join('')}
+ <line x1="${pl}" x2="${W-pr}" y1="${H-pb}" y2="${H-pb}" stroke="var(--ink)" stroke-width="1"/></svg>`;
+ if(opt.onTap)el.querySelectorAll('[data-k]').forEach(g=>g.onclick=()=>opt.onTap(g.dataset.k));}
+function trend(R,ev){let items;
+ if(R.n===1){const hs=Array.from({length:24},()=>({g:0,p:new Set()}));ev.forEach(e=>{const o=hs[hr(e.t)];o.g++;o.p.add(e.n);});items=hs.map((o,h)=>({label:h%6===0?(h%12||12)+(h<12?'a':'p'):'',value:measure==='games'?o.g:o.p.size,tip:`${hrName(h)}: ${o.g} games, ${o.p.size} players`}));$('trendT').textContent='Activity today, by hour';}
+ else{const nd=R.n||Math.min(90,Math.max(7,Math.ceil((Date.now()/1000-(D.ev[0]?D.ev[0].t:Date.now()/1000))/DAY)+1)),end=Math.floor((Date.now()/1000+IST)/DAY);const keys=[];for(let i=nd-1;i>=0;i--)keys.push(new Date((end-i)*DAY*1000).toISOString().slice(0,10));
+  const m={};keys.forEach(k=>m[k]={g:0,p:new Set()});(R.n?ev:D.ev).forEach(e=>{const o=m[dk(e.t)];if(o){o.g++;o.p.add(e.n);}});
+  items=keys.map(k=>({label:dShort(k),key:k,value:measure==='games'?m[k].g:m[k].p.size,tip:`${dShort(k)}: ${m[k].g} games, ${m[k].p.size} players`}));$('trendT').textContent=R.n?'Activity by day':`Activity by day (last ${nd} days)`;}
+ $('trendHint').hidden=R.n===1;vbars($('trend'),items,{every:R.n===1?6:0,aria:measure==='games'?'Games finished per day':'Active players per day',onTap:k=>open(()=>dayView(k))});}
+function hbars(el,rows,opts){/* rows: [{label,value,sub,act}] */const mx=Math.max(1,...rows.map(r=>r.value));
+ el.innerHTML=rows.length?rows.map((r,i)=>`<div class="hbar" data-i="${i}" data-tip="${esc(r.tip||'')}"><span class="nm">${esc(r.label)}</span><span class="tr"><span class="fl" style="width:${r.value?Math.max(2,r.value/mx*100):0}%"></span></span><span class="v">${N(r.value)}${r.sub?` <span class="muted">${r.sub}</span>`:''}</span></div>`).join(''):`<p class="muted" style="margin:0">${opts.empty}</p>`;
+ el.querySelectorAll('.hbar').forEach(b=>b.onclick=()=>rows[+b.dataset.i].act&&rows[+b.dataset.i].act());}
+function topGames(ev){const byG={};ev.forEach(e=>{const o=byG[e.g]=byG[e.g]||{c:0,p:new Set()};o.c++;o.p.add(e.n);});
+ const rows=Object.entries(byG).sort((a,b)=>b[1].c-a[1].c).slice(0,8).map(([g,o])=>({label:g||'(unnamed)',value:o.c,sub:`· ${o.p.size}p`,tip:`${g}: ${o.c} games by ${o.p.size} players`,act:()=>open(()=>gameView(g))}));
+ hbars($('topGames'),rows,{empty:'No games in this period.'});}
+function hours(ev){const hs=Array(24).fill(0);ev.forEach(e=>hs[hr(e.t)]++);vbars($('hours'),hs.map((v,h)=>({label:h%6===0?(h%12||12)+(h<12?'am':'pm'):'',value:v,tip:`${hrName(h)}: ${v} games`})),{h:140,every:6,aria:'Games by hour of day'});}
+const BK=[[1,1,'1 game'],[2,5,'2–5 games'],[6,20,'6–20 games'],[21,1e9,'21+ games']];
+function buckets(ev,act){const per={};ev.forEach(e=>per[e.n]=(per[e.n]||0)+1);
+ hbars($('buckets'),BK.map(([a,b,l])=>{const ids=Object.keys(per).map(Number).filter(n=>per[n]>=a&&per[n]<=b);return{label:l,value:ids.length,sub:act.size?`· ${pct(ids.length,act.size)}%`:'',tip:`${ids.length} players finished ${l}`,act:()=>open(()=>listView(`Players with ${l}`,ids,'period'))};}),{empty:'No players in this period.'});}
+function fbSum(fbs){const up=fbs.filter(r=>isUp(r.rating)).length,dn=fbs.filter(r=>isDn(r.rating)).length,t=up+dn;
+ const reasons=count(fbs.flatMap(r=>r.reasons.split(',').map(x=>x.trim()).filter(Boolean).map(x=>x.slice(0,40))),x=>x).slice(0,6);
+ const cm=fbs.filter(r=>r.comment).slice(-3).reverse();
+ $('fbSum').innerHTML=t?`<div class="split" role="img" aria-label="${up} enjoying, ${dn} not enjoying">${up?`<i style="flex:${up};background:var(--s1)" data-tip="👍 Enjoying: ${up}"></i>`:''}${dn?`<i style="flex:${dn};background:var(--s2)" data-tip="👎 Not enjoying: ${dn}"></i>`:''}</div><div class="legend"><span style="--c:var(--s1)">👍 Enjoying ${up} (${pct(up,t)}%)</span><span style="--c:var(--s2)">👎 Not enjoying ${dn}</span></div>
+  ${reasons.length?`<h3>Reasons given</h3>${reasons.map(([r,c])=>`<span class="chip">${esc(r)} · ${c}</span>`).join('')}`:''}${cm.length?`<h3>Latest comments</h3>${cm.map(fbItem).join('')}`:''}`:'<p class="muted" style="margin:0">No feedback in this period.</p>';}
+const fbItem=r=>`<div class="fb"><div>${isUp(r.rating)?'<span class="upc">👍</span>':isDn(r.rating)?'<span class="dnc">👎</span>':'📝'} <b>${esc(r.game)}</b> <span class="muted">· ${esc(r.who||'player')} · ${ago(r.t)}</span></div>${r.reasons?`<div style="margin-top:4px">${r.reasons.split(',').map(x=>x.trim()).filter(Boolean).slice(0,6).map(x=>`<span class="chip">${esc(x.slice(0,50))}</span>`).join('')}</div>`:''}${r.comment?`<p>${esc(r.comment)}</p>`:''}</div>`;
+function board(){const ps=Object.values(D.players).filter(p=>p.xp>0).sort((a,b)=>b.xp-a.xp).slice(0,5);
+ $('board').innerHTML=ps.length?`<table><tbody>${ps.map((p,i)=>`<tr class="click" data-n="${p.n}"><td style="width:28px">${['🥇','🥈','🥉'][i]||i+1}</td><td>${nm(p.n)}</td><td class="n">${N(p.xp)} XP</td></tr>`).join('')}</tbody></table>`:'<p class="muted" style="margin:0">No players yet.</p>';
+ $('board').querySelectorAll('[data-n]').forEach(r=>r.onclick=()=>open(()=>playerView(+r.dataset.n)));}
+
+/* ---------- details sheet ---------- */
+function open(fn){stack.push(fn);show();}
+function show(){const fn=stack[stack.length-1];if(!fn){$('sheet').hidden=true;document.body.style.overflow='';return;}const [t,h]=fn();$('shT').textContent=t;$('shB').innerHTML=h;$('shBack').style.visibility=stack.length>1?'visible':'hidden';$('sheet').hidden=false;document.body.style.overflow='hidden';wire($('shB'));$('sheet').querySelector('.pan').scrollTop=0;}
+function wire(root){root.querySelectorAll('[data-n]').forEach(r=>r.onclick=()=>open(()=>playerView(+r.dataset.n)));root.querySelectorAll('[data-g]').forEach(r=>r.onclick=()=>open(()=>gameView(r.dataset.g)));root.querySelectorAll('[data-day]').forEach(r=>r.onclick=()=>open(()=>dayView(r.dataset.day)));
+ const f=root.querySelector('#fbF');if(f)f.onchange=()=>{fbFilter=f.value;stack[stack.length-1]=()=>feedbackView();show();};
+ const bs=root.querySelector('#bS');if(bs){bs.oninput=()=>{bq=bs.value;const tb=root.querySelector('#bT');tb.innerHTML=boardRows();wire(tb);};}
+ root.querySelectorAll('[data-bp]').forEach(b=>b.onclick=()=>{bp=b.dataset.bp;stack[stack.length-1]=()=>boardView();show();});
+ root.querySelectorAll('.dchart').forEach(el=>{const it=JSON.parse(el.dataset.items);vbars(el,it,{h:130,aria:'Games per day',onTap:k=>open(()=>dayView(k))});});}
+const mini=a=>`<div class="mini">${a.map(([v,l])=>`<div><b>${v}</b><span>${l}</span></div>`).join('')}</div>`;
+function playerRows(ids,mode){const R=D.cur.R;const rows=ids.map(n=>{const c=D.ev.filter(e=>e.n===n&&inR(e.t,R.s,R.e)).length;return{n,c,last:D.last[n]||D.players[n]&&D.players[n].updated,first:D.first[n]};}).sort((a,b)=>mode==='first'?b.first-a.first:mode==='last'?b.last-a.last:b.c-a.c);
+ return`<div class="scroll"><table><thead><tr><th>Player</th><th class="n">Games ${R.n?'(period)':''}</th><th class="n">All games</th><th>First played</th><th>Last played</th></tr></thead><tbody>${rows.map(r=>`<tr class="click" data-n="${r.n}"><td>${nm(r.n)}</td><td class="n">${N(r.c)}</td><td class="n">${N(D.ev.filter(e=>e.n===r.n).length)}</td><td class="muted">${ago(r.first)}</td><td class="muted">${ago(r.last)}</td></tr>`).join('')||'<tr><td colspan="5" class="muted">Nobody here.</td></tr>'}</tbody></table></div>`;}
+function listView(title,ids,mode){return[title,`<p class="muted" style="margin-top:0">${N(ids.length)} ${ids.length===1?'player':'players'}. Tap one for details.</p>${playerRows(ids,mode)}`];}
+function dayChart(evs,days){const end=Math.floor((Date.now()/1000+IST)/DAY);const keys=[];for(let i=days-1;i>=0;i--)keys.push(new Date((end-i)*DAY*1000).toISOString().slice(0,10));const m={};keys.forEach(k=>m[k]=0);evs.forEach(e=>{const k=dk(e.t);if(k in m)m[k]++;});
+ return`<div class="dchart" data-items='${esc(JSON.stringify(keys.map(k=>({label:dShort(k),key:k,value:m[k],tip:`${dShort(k)}: ${m[k]} games`}))))}'></div>`;}
+function gameView(g){const R=D.cur.R,all=D.ev.filter(e=>e.g===g),inP=all.filter(e=>inR(e.t,R.s,R.e)),pl=count(inP,e=>e.n),rep=pl.filter(([n,c])=>c>=2).length,xp=inP.reduce((a,e)=>a+e.gain,0);
+ const fbs=D.fb.filter(r=>r.game===g),up=fbs.filter(r=>isUp(r.rating)).length,dn=fbs.filter(r=>isDn(r.rating)).length;
+ return[g||'(unnamed)',`<p class="muted" style="margin-top:0">Numbers for ${R.label}.</p>${mini([[N(inP.length),'games finished'],[N(pl.length),'players'],[pl.length?pct(rep,pl.length)+'%':'–','played it again'],[inP.length?Math.round(xp/inP.length):'–','average XP'],[N(all.length),'games, all time'],[N(new Set(all.map(e=>e.n)).size),'players, all time'],[up+dn?pct(up,up+dn)+'% 👍':'–',`${up+dn} ratings`],[ago(all.length?all[all.length-1].t:0),'last played']])}
+  <h3>Games per day (last 30 days)</h3>${dayChart(all,30)}
+  <h3>Top players ${R.n?'in this period':''}</h3><div class="scroll"><table><tbody>${pl.slice(0,10).map(([n,c])=>`<tr class="click" data-n="${n}"><td>${nm(+n)}</td><td class="n">${N(c)} games</td></tr>`).join('')||'<tr><td class="muted">Nobody yet.</td></tr>'}</tbody></table></div>
+  <h3>Feedback (${N(fbs.length)})</h3>${fbs.slice().reverse().slice(0,40).map(fbItem).join('')||'<p class="muted">No feedback for this game yet.</p>'}`];}
+function playerView(n){const p=D.players[n]||{},all=D.ev.filter(e=>e.n===n),fbs=D.fb.filter(r=>r.n===n),byG=count(all,e=>e.g);
+ return[p.name?`${p.name} · P${n}`:'P'+n,`${mini([[N(p.xp),'total XP'],[N(Math.max(p.plays||0,all.length)),'games finished'],[N((D.days[n]||new Set()).size),'days played'],[ago(D.last[n]||p.updated),'last played'],[ago(D.first[n]),'first played'],[N(byG.length),'different games'],[N(fbs.length),'feedback given'],[p.hid||'–','player ID']])}
+  <h3>Games per day (last 30 days)</h3>${dayChart(all,30)}
+  <h3>Favourite games</h3><div class="scroll"><table><tbody>${byG.slice(0,12).map(([g,c])=>`<tr class="click" data-g="${esc(g)}"><td>${esc(g||'(unnamed)')}</td><td class="n">${N(c)} games</td></tr>`).join('')||'<tr><td class="muted">No games logged.</td></tr>'}</tbody></table></div>
+  <h3>Recent games</h3><div class="scroll"><table><tbody>${all.slice(-15).reverse().map(e=>`<tr class="click" data-g="${esc(e.g)}"><td class="muted">${ago(e.t)}</td><td>${esc(e.g||'–')}</td><td class="n">+${N(e.gain)} XP</td></tr>`).join('')||'<tr><td class="muted">None.</td></tr>'}</tbody></table></div>
+  ${fbs.length?`<h3>Their feedback</h3>${fbs.slice().reverse().map(fbItem).join('')}`:''}`];}
+function dayView(k){const evs=D.ev.filter(e=>dk(e.t)===k),byG=count(evs,e=>e.g),pl=count(evs,e=>e.n);
+ return[dShort(k)+' '+k.slice(0,4),`${mini([[N(evs.length),'games finished'],[N(pl.length),'players'],[N(pl.filter(([n])=>D.first[n]>=Date.parse(k+'T00:00:00+05:30')/1000).length),'new players'],[N(byG.length),'different games']])}
+  <h3>Games played</h3><div class="scroll"><table><tbody>${byG.map(([g,c])=>`<tr class="click" data-g="${esc(g)}"><td>${esc(g||'(unnamed)')}</td><td class="n">${N(c)}</td></tr>`).join('')||'<tr><td class="muted">No games that day.</td></tr>'}</tbody></table></div>
+  <h3>Players</h3><div class="scroll"><table><tbody>${pl.map(([n,c])=>`<tr class="click" data-n="${n}"><td>${nm(+n)}</td><td class="n">${N(c)} games</td></tr>`).join('')}</tbody></table></div>`];}
+function gamesView(){const R=D.cur.R,ev=D.cur.ev,byG={};ev.forEach(e=>{const o=byG[e.g]=byG[e.g]||{c:0,p:new Set(),xp:0};o.c++;o.p.add(e.n);o.xp+=e.gain;});const fbG={};D.fb.forEach(r=>{if(!inR(r.t,R.s,R.e))return;const o=fbG[r.game]=fbG[r.game]||{u:0,d:0};if(isUp(r.rating))o.u++;else if(isDn(r.rating))o.d++;});
+ const names=[...new Set([...Object.keys(byG),...Object.keys(fbG)])].sort((a,b)=>((byG[b]||{}).c||0)-((byG[a]||{}).c||0));
+ return['All games',`<p class="muted" style="margin-top:0">${R.label[0].toUpperCase()+R.label.slice(1)}. Tap a game for details.</p><div class="scroll"><table><thead><tr><th>Game</th><th class="n">Games</th><th class="n">Players</th><th class="n">Avg XP</th><th class="n">👍</th><th class="n">👎</th></tr></thead><tbody>${names.map(g=>{const o=byG[g]||{c:0,p:new Set(),xp:0},f=fbG[g]||{u:0,d:0};return`<tr class="click" data-g="${esc(g)}"><td>${esc(g||'(unnamed)')}</td><td class="n">${N(o.c)}</td><td class="n">${N(o.p.size)}</td><td class="n">${o.c?Math.round(o.xp/o.c):'–'}</td><td class="n upc">${f.u||''}</td><td class="n dnc">${f.d||''}</td></tr>`;}).join('')||'<tr><td colspan="6" class="muted">No games in this period.</td></tr>'}</tbody></table></div>`];}
+let fbFilter='all';
+function feedbackView(){const R=D.cur.R,l=D.fb.filter(r=>inR(r.t,R.s,R.e)).filter(r=>fbFilter==='all'||(fbFilter==='up'&&isUp(r.rating))||(fbFilter==='down'&&isDn(r.rating))||(fbFilter==='comment'&&r.comment)).reverse();
+ return['Feedback',`<div class="bar-row"><select id="fbF" aria-label="Filter feedback">${[['all','All feedback'],['up','👍 Enjoying'],['down','👎 Not enjoying'],['comment','With a comment']].map(([v,t])=>`<option value="${v}" ${v===fbFilter?'selected':''}>${t}</option>`).join('')}</select><span class="muted">${N(l.length)} in ${R.label}</span></div>${l.slice(0,200).map(fbItem).join('')||'<p class="muted">No feedback matches.</p>'}`];}
+let bp='all',bq='';
+function boardRows(){const val=p=>bp==='week'?p.weekXp:p.xp,ranked=Object.values(D.players).filter(p=>val(p)>0).sort((a,b)=>val(b)-val(a)||a.n-b.n).map((p,i)=>({...p,rank:i+1})),q=bq.trim().toLowerCase();
+ const l=q?ranked.filter(p=>('p'+p.n).includes(q)||p.name.toLowerCase().includes(q)||p.hid.includes(q)):ranked;
+ return l.slice(0,200).map(p=>`<tr class="click" data-n="${p.n}"><td>${p.rank}</td><td>${nm(p.n)}</td><td class="n">${N(val(p))}</td><td class="n">${N(p.plays)}</td><td class="muted">${ago(D.last[p.n]||p.updated)}</td></tr>`).join('')||'<tr><td colspan="5" class="muted">No players match.</td></tr>';}
+function boardView(){return['Leaderboard',`<div class="bar-row"><div class="seg"><button data-bp="all" aria-pressed="${bp==='all'}">All time</button><button data-bp="week" aria-pressed="${bp==='week'}">This week</button></div><input id="bS" type="search" placeholder="Find a name, P12 or ID" value="${esc(bq)}" style="flex:1;min-width:140px"></div><div class="scroll"><table><thead><tr><th>#</th><th>Player</th><th class="n">${bp==='week'?'XP this week':'Total XP'}</th><th class="n">Games</th><th>Last played</th></tr></thead><tbody id="bT">${boardRows()}</tbody></table></div>`];}
+function kpiView(k){const c=D.cur,R=c.R;
+ if(k==='active')return listView(`Active players (${R.label})`,[...c.act],'period');
+ if(k==='new')return listView(`New players (${R.label})`,c.newP,'first');
+ if(k==='ret')return listView(R.n?'Players who came back':'Players on 2+ days',c.ret,'period');
+ if(k==='games'||k==='gpp')return gamesView();
+ if(k==='fb')return feedbackView();}
+
+/* ---------- tooltip ---------- */
+const tip=$('tip');document.addEventListener('pointermove',e=>{const t=e.target.closest&&e.target.closest('[data-tip]');if(t&&t.dataset.tip){tip.textContent=t.dataset.tip;tip.style.opacity=1;const x=Math.min(innerWidth-tip.offsetWidth-8,e.clientX+12),y=Math.max(8,e.clientY-tip.offsetHeight-12);tip.style.left=x+'px';tip.style.top=y+'px';}else tip.style.opacity=0;});
+document.addEventListener('pointerdown',()=>{tip.style.opacity=0;});
+
+/* ---------- load / wiring ---------- */
+function showApp(s){$('login').hidden=s;$('app').hidden=!s;$('refresh').hidden=!s;$('logout').hidden=!s;}
+async function load(){$('updated').textContent='Loading…';
  try{const r=await fetch(API+'?action=stats&key='+encodeURIComponent(key));const d=await r.json();
-  if(!d.ok){show(false);$('updated').textContent='';$('loginErr').textContent=d.error==='wrong_key'?'That password didn’t work. Check OWNER_KEY in your Apps Script (and that it isn’t the default).':'Something went wrong: '+(d.error||'unknown');return;}
-  data=d;try{localStorage.setItem('pp_owner_key',key);}catch(e){}show(true);$('loginErr').textContent='';render();$('updated').textContent='Updated '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
- }catch(e){$('updated').textContent='';show(false);$('loginErr').textContent='Couldn’t reach the Apps Script. Check that the web app is deployed with access set to “Anyone”.';}}
-function render(){const ps=data.players.slice(),q=$('search').value.trim().toLowerCase(),val=p=>period==='week'?p.weekXp:p.xp;
- const active=ps.filter(p=>p.weekXp>0).length,games=ps.reduce((a,p)=>a+p.plays,0),xp=ps.reduce((a,p)=>a+p.xp,0);
- $('kpis').innerHTML=[[fmtN(ps.length),'players'],[fmtN(active),'active this week'],[fmtN(games),'games finished'],[fmtN(xp),'total XP earned'],[fmtN(data.feedbackTotal||0),'feedback received']].map(([b,s])=>`<div class="kpi"><b>${b}</b><span>${s}</span></div>`).join('');
- const ranked=ps.filter(p=>val(p)>0).sort((a,b)=>val(b)-val(a)||parseInt(a.p.slice(1))-parseInt(b.p.slice(1))).map((p,i)=>({...p,rank:i+1}));
- const list=q?ranked.filter(p=>p.p.toLowerCase().includes(q)||String(p.name||'').toLowerCase().includes(q)||String(p.hid||'').includes(q)):ranked;
- $('xpHead').textContent=period==='week'?'XP this week':'Total XP';
- $('rows').innerHTML=list.length?list.slice(0,q?200:100).map(p=>`<tr class="${p.rank<=3?'top'+p.rank:''}"><td class="rank">${p.rank}</td><td>${p.name?`${esc(p.name)}<span class="pid">${esc(p.p)}</span>`:esc(p.p)}</td><td class="n">${fmtN(val(p))}</td><td class="n">${fmtN(p.plays)}</td><td class="muted">${ago(p.updated)}</td></tr>`).join(''):`<tr><td colspan="5" class="muted">${q?'No player matches that search.':period==='week'?'No games played yet this week.':'No players yet. Play a game on Pocket Plays to appear here.'}</td></tr>`;
- $('count').textContent=ranked.length>100&&!q?`Showing the top 100 of ${fmtN(ranked.length)} players. Search to find anyone else.`:`${fmtN(ranked.length)} ${ranked.length===1?'player':'players'} ranked.`;
- const dl=data.daily||[];if(!dl.length){$('chart').innerHTML='<p class="muted">No games logged yet.</p>';}else{const W=440,H=170,pl=4,pb=22,mx=Math.max(1,...dl.map(d=>d.games)),bw=(W-pl*2)/dl.length,step=Math.ceil(dl.length/6);
-  $('chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Games finished per day">${dl.map((d,i)=>{const h=(H-pb-14)*d.games/mx,x=pl+i*bw;return`<g><title>${d.day}: ${d.games} games, ${d.players} players</title><rect class="bar" x="${x+1}" y="${H-pb-h}" width="${Math.max(2,bw-3)}" height="${h}" rx="3"/>${i%step===0||i===dl.length-1?`<text class="axis" x="${x+bw/2}" y="${H-6}" text-anchor="middle">${d.day.slice(5)}</text>`:''}</g>`;}).join('')}<text class="axis" x="${pl}" y="10">max ${mx}</text></svg>`;}
- const gs=(data.games||[]).slice().sort((a,b)=>b.plays-a.plays||(b.up+b.down)-(a.up+a.down));
- $('games').innerHTML=gs.length?gs.map(g=>`<tr><td>${esc(g.game)}</td><td class="n">${fmtN(g.plays)}</td><td class="n">${fmtN(g.players)}</td><td class="n">${fmtN(g.xp)}</td><td class="n up">${g.up||''}</td><td class="n dn">${g.down||''}</td></tr>`).join(''):'<tr><td colspan="6" class="muted">No games logged yet.</td></tr>';
- const ff=$('fbFilter').value,fbl=(data.feedback||[]).filter(r=>{const rt=r.rating.toLowerCase();return ff==='all'||(ff==='up'&&rt==='enjoying')||(ff==='down'&&rt==='not enjoying')||(ff==='comment'&&r.comment);});
- $('feedback').innerHTML=fbl.length?fbl.map(r=>{const rt=r.rating.toLowerCase(),icon=rt==='enjoying'?'<span class="up">👍</span>':rt==='not enjoying'?'<span class="dn">👎</span>':'📝';const long=r.comment.length>300;return`<div class="fb"><div>${icon} <b>${esc(r.game||'App')}</b> <span class="muted">· ${esc(r.p||'player')} · ${ago(r.time)}</span></div>${r.reasons?`<div style="margin-top:4px">${r.reasons.split(',').map(x=>x.trim()).filter(Boolean).slice(0,6).map(x=>`<span class="tag">${esc(x.slice(0,60))}</span>`).join('')}</div>`:''}${r.comment?`<p>${esc(long?r.comment.slice(0,300)+'…':r.comment)}</p>`:''}</div>`;}).join(''):`<p class="muted" style="margin:0">${ff==='all'?'No feedback yet. It appears here when players tap thumbs up or down.':'No feedback matches this filter.'}</p>`;
- $('fbCount').textContent=(data.feedbackTotal||0)?'('+fmtN(data.feedbackTotal)+')':'';
- $('recent').innerHTML=(data.recent||[]).length?data.recent.map(r=>`<tr><td class="muted">${ago(r.time)}</td><td>${esc(r.name||r.p)}</td><td>${esc(r.game||'–')}</td><td class="n">+${fmtN(r.gain)}</td></tr>`).join(''):'<tr><td colspan="4" class="muted">No games yet.</td></tr>';}
-document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-t]').forEach(x=>x.setAttribute('aria-pressed',x===b));document.querySelectorAll('[data-sec]').forEach(s=>s.hidden=s.dataset.sec!==b.dataset.t);try{localStorage.setItem('pp_dash_tab',b.dataset.t);}catch(e){}});
-try{const t=localStorage.getItem('pp_dash_tab');const b=t&&document.querySelector(`[data-t="${t}"]`);if(b)b.click();}catch(e){}
-document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{period=b.dataset.p;document.querySelectorAll('[data-p]').forEach(x=>x.setAttribute('aria-pressed',x===b));render();});
-$('search').oninput=()=>data&&render();$('fbFilter').onchange=()=>data&&render();
+  if(!d.ok){showApp(false);$('updated').textContent='';$('loginErr').textContent=d.error==='wrong_key'?'That password didn’t work. Check OWNER_KEY in your Apps Script (and that it isn’t the default).':'Something went wrong: '+(d.error||'unknown');return;}
+  D=prep(d);try{localStorage.setItem('pp_owner_key',key);}catch(e){}showApp(true);$('loginErr').textContent='';
+  $('warn').innerHTML=D.v2?'':'<div class="warn">Your Apps Script is the older version, so most insights are empty. Paste the new Apps Script code, then Deploy → Manage deployments → Edit → New version.</div>';
+  render();$('updated').textContent='Updated '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+ }catch(e){$('updated').textContent='';showApp(false);$('loginErr').textContent='Couldn’t reach the Apps Script. Check that the web app is deployed with access set to “Anyone”.';}}
+document.querySelectorAll('[data-per]').forEach(b=>b.onclick=()=>{per=b.dataset.per;try{localStorage.setItem('pp_dash_per',per);}catch(e){}render();});
+document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{measure=b.dataset.m;document.querySelectorAll('[data-m]').forEach(x=>x.setAttribute('aria-pressed',x===b));trend(D.cur.R,D.cur.ev);});
+$('kpis').onclick=e=>{const b=e.target.closest('[data-kpi]');if(b)open(()=>kpiView(b.dataset.kpi));};
+document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{const w=b.dataset.open;open(w==='games'?gamesView:w==='feedback'?feedbackView:boardView);});
+$('shBack').onclick=()=>{stack.pop();show();};$('shClose').onclick=()=>{stack=[];show();};$('sheet').onclick=e=>{if(e.target===$('sheet')){stack=[];show();}};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&stack.length){stack=[];show();}});
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(D&&!$('app').hidden)render();},150);});
 $('loginForm').onsubmit=e=>{e.preventDefault();key=$('key').value.trim();if(key)load();};
 $('refresh').onclick=load;
-$('logout').onclick=()=>{key='';try{localStorage.removeItem('pp_owner_key');}catch(e){}data=null;show(false);$('updated').textContent='';};
-if(key)load();else show(false);
+$('logout').onclick=()=>{key='';try{localStorage.removeItem('pp_owner_key');}catch(e){}D=null;showApp(false);$('updated').textContent='';};
+if(key)load();else showApp(false);
 })();
 </script>
 </body>
